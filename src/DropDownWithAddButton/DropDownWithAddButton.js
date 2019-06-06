@@ -5,10 +5,15 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
+import DoneIcon from '@material-ui/icons/Done';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
 import './style.css';
+import { IconButton } from '@material-ui/core';
 
-// const useStyles = makeStyles(theme => ({
+//Using the below style is affected by the known [issue](https://github.com/facebook/react/issues/13991)
+
+// const buttonUseStyles = makeStyles(theme => ({
 //     button: {
 //       margin: theme.spacing(1),
 //     },
@@ -16,8 +21,6 @@ import './style.css';
 //       display: 'none',
 //     },
 //   }));
-
-//   const classes = useStyles();
 
 function renderMenuItemsWithAddbutton(props) {
     let items = props.items;
@@ -43,17 +46,17 @@ function renderMenuItemsWithAddbutton(props) {
 
     return (
         <div>
-            <InputLabel>{props.name}</InputLabel>
-            <Select
-                value={props.curValue}
-                onChange={(event) => props.onChange(event.target.value)}
-                className="selector"
-            >
-                {menuItems}
-            </Select>
-            <Button variant="outlined" color="default" onClick={() =>props.onAddClick()}>
-                Add
-            </Button>
+            <FormControl>
+                <InputLabel>{props.name}</InputLabel>
+                <Select
+                    value={props.curValue}
+                    onChange={(event) => props.onChange(event.target.value)}
+                    className="selector"
+                >
+                    {menuItems}
+                </Select>
+            </FormControl>
+            <IconButton onClick={() => props.onAddClick()} size="small"><AddIcon /></IconButton>
         </div>
     );
 }
@@ -61,13 +64,15 @@ function renderMenuItemsWithAddbutton(props) {
 function renderNewEntryWithConfirmButton(props) {
     return (
         <div>
-            <TextField 
-                value={props.curValue} 
-                onChange={(event) => props.onTextChange(event.target.value)}
-                label={"New " + props.name.toLowerCase()}
-                className="selector"></TextField>
-            <Button variant="contained" color="primary" onClick={props.onAddConfirmed}>Confirm</Button>
-            <Button variant="contained" color="secondary" onClick={props.onCancelClicked}>Cancel</Button>
+            <FormControl>
+                <TextField 
+                    value={props.curValue} 
+                    onChange={(event) => props.onTextChange(event.target.value)}
+                    label={"New " + props.name.toLowerCase()}
+                    className="selector"></TextField>
+            </FormControl>
+            <IconButton onClick={props.onAddConfirmed} size="small"><DoneIcon /></IconButton>
+            <IconButton onClick={props.onCancelClicked} size="small"><DeleteIcon /></IconButton>
         </div>
     );
 }
@@ -87,19 +92,17 @@ class DropDownWithAddButton extends React.Component {
             addingNewItem: false,
             addingNewItemValid: true
         };
-
-        this.addNewItemConst = Symbol("add new item");
     }
 
     render() {
         let addingNewItem = this.state.addingNewItem;
         
         return (
-            <FormControl>
+            <div variant="outlined">
                 {addingNewItem ? 
                     this.renderAddingNewItem() 
                     : this.renderMenuItemsSelect()}
-            </FormControl>
+            </div>
         )
     }
 
@@ -121,10 +124,11 @@ class DropDownWithAddButton extends React.Component {
     }
 
     handleItemSelectChange(item) {
-        
         this.setState({
             curValue: item
         });
+
+        this.raiseOnChangeCallback();
     }
 
     renderAddingNewItem() {
@@ -154,6 +158,8 @@ class DropDownWithAddButton extends React.Component {
             items: curItems,
             addingNewItem: false
         });
+
+        this.raiseOnNewItemAddedCallback(this.state.curValue);
     }
 
     handleCancelAddingNewItem() {
@@ -161,6 +167,18 @@ class DropDownWithAddButton extends React.Component {
             addingNewItem: false,
             curValue: ""
         });
+    }
+
+    raiseOnChangeCallback() {
+        if (this.props.onChange) {
+            this.props.onChange(this.state.curValue);
+        }
+    }
+
+    raiseOnNewItemAddedCallback(newItem) {
+        if (this.props.onNewItemAdded) {
+            this.props.onNewItemAdded(newItem);
+        }
     }
 }
 
