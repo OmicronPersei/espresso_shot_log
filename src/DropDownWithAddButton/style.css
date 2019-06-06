@@ -1,0 +1,21 @@
+/* .MuiFormControl-root {
+    min-width: 10em;
+} */
+
+.drop-down-button {
+    vertical-align: bottom;
+}
+.drop-down-button {
+    width: 1%;
+}
+/* DropDown {
+    width: 100%;
+} */
+.drop-down-table {
+    width: 100%;
+    border-spacing: 0;
+}
+table, td, tr {
+    margin: 0;
+    padding: 0;
+}
