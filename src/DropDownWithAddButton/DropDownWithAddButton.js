@@ -19,6 +19,59 @@ import './style.css';
 
 //   const classes = useStyles();
 
+function renderMenuItemsWithAddbutton(props) {
+    let items = props.items;
+    let menuItems = [];
+    
+    let nullMenuItem = (
+        <MenuItem value="" key="">
+            (none)
+        </MenuItem>
+    );
+
+    menuItems.push(nullMenuItem);
+
+    let defaultMenuItems = items.map(item =>
+        (
+            <MenuItem value={item} key={item}>
+                {item}
+            </MenuItem>
+        )
+    );
+
+    menuItems = menuItems.concat(defaultMenuItems);
+
+    return (
+        <div>
+            <InputLabel>{props.name}</InputLabel>
+            <Select
+                value={props.curValue}
+                onChange={(event) => props.onChange(event.target.value)}
+                className="selector"
+            >
+                {menuItems}
+            </Select>
+            <Button variant="outlined" color="default" onClick={() =>props.onAddClick()}>
+                Add
+            </Button>
+        </div>
+    );
+}
+
+function renderNewEntryWithConfirmButton(props) {
+    return (
+        <div>
+            <TextField 
+                value={props.curValue} 
+                onChange={(event) => props.onTextChange(event.target.value)}
+                label={"New " + props.name.toLowerCase()}
+                className="selector"></TextField>
+            <Button variant="contained" color="primary" onClick={props.onAddConfirmed}>Confirm</Button>
+            <Button variant="contained" color="secondary" onClick={props.onCancelClicked}>Cancel</Button>
+        </div>
+    );
+}
+
 class DropDownWithAddButton extends React.Component {
 
     constructor(props) {
@@ -43,29 +96,21 @@ class DropDownWithAddButton extends React.Component {
         
         return (
             <FormControl>
-                {addingNewItem ? this.renderAddingNewItem() : this.renderMenuItemsSelect()}
+                {addingNewItem ? 
+                    this.renderAddingNewItem() 
+                    : this.renderMenuItemsSelect()}
             </FormControl>
         )
     }
 
     renderMenuItemsSelect() {
-        let curValue = this.state.curValue;
-
-        return (
-            <div>
-                <InputLabel>{this.props.name}</InputLabel>
-                <Select
-                    value={curValue}
-                    onChange={(event) => this.handleItemSelectChange(event)}
-                    className="selector"
-                >
-                    {this.renderMenuItems()}
-                </Select>
-                <Button variant="outlined" color="default" onClick={() => this.handleAddButtonClick()}>
-                    Add
-                </Button>
-            </div>
-        );
+        return renderMenuItemsWithAddbutton({
+            items: this.state.items,
+            curValue: this.state.curValue,
+            onChange: (item) => this.handleItemSelectChange(item),
+            onAddClick: () => this.handleAddButtonClick(),
+            name: this.props.name
+        });
     }
 
     handleAddButtonClick() {
@@ -75,58 +120,24 @@ class DropDownWithAddButton extends React.Component {
         })
     }
 
-    renderMenuItems() {
-        let items = this.state.items;
-        let menuItems = [];
-        
-        let nullMenuItem = (
-            <MenuItem value="" key="">
-                (none)
-            </MenuItem>
-        );
-
-        menuItems.push(nullMenuItem);
-
-        let defaultMenuItems = items.map(item =>
-            (
-                <MenuItem value={item} key={item}>
-                    {item}
-                </MenuItem>
-            )
-        );
-
-        menuItems = menuItems.concat(defaultMenuItems);
-        
-
-        return menuItems;
-    }
-
-    handleItemSelectChange(event) {
-        let newItem = event.target.value;
-        console.log("setting new selection to " + newItem);
+    handleItemSelectChange(item) {
         
         this.setState({
-            curValue: newItem
+            curValue: item
         });
     }
 
     renderAddingNewItem() {
-        let isError = !this.state.addingNewItemValid;
-        return (
-            <div>
-                <TextField 
-                    value={this.state.curValue} 
-                    onChange={(event) => this.handleAddNewItemTextChange(event)}
-                    label={"New " + this.props.name.toLowerCase()}
-                    className="selector"></TextField>
-                <Button variant="contained" color="primary" onClick={() => this.handleAddNewItem()}>Confirm</Button>
-            </div>
-        );
+        return renderNewEntryWithConfirmButton({
+            name: this.props.name,
+            onTextChange: (newVal) => this.handleAddNewItemTextChange(newVal),
+            onAddConfirmed: () => this.handleAddNewItem(),
+            onCancelClicked: () => this.handleCancelAddingNewItem(),
+            curValue: this.state.curValue
+        });
     }
 
-    handleAddNewItemTextChange(event) {
-        let newVal = event.target.value;
-
+    handleAddNewItemTextChange(newVal) {
         let addingNewItemValid = !this.state.items.includes(newVal);
 
         this.setState({
@@ -142,6 +153,13 @@ class DropDownWithAddButton extends React.Component {
         this.setState({
             items: curItems,
             addingNewItem: false
+        });
+    }
+
+    handleCancelAddingNewItem() {
+        this.setState({
+            addingNewItem: false,
+            curValue: ""
         });
     }
 }
