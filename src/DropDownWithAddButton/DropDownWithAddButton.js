@@ -85,11 +85,6 @@ class DropDownWithAddButton extends React.Component {
         super(props);
 
         this.state = {
-            items: [
-                "Counter culture",
-                "Sage brush",
-                "Starbucks"
-            ],
             curValue: "",
             addingNewItem: false,
             addingNewItemValid: true
@@ -110,7 +105,7 @@ class DropDownWithAddButton extends React.Component {
 
     renderMenuItemsSelect() {
         return renderMenuItemsWithAddbutton({
-            items: this.state.items,
+            items: this.props.items,
             curValue: this.state.curValue,
             onChange: (item) => this.handleItemSelectChange(item),
             onAddClick: () => this.handleAddButtonClick(),
@@ -122,7 +117,9 @@ class DropDownWithAddButton extends React.Component {
         this.setState({
             addingNewItem: true,
             curValue: ""
-        })
+        });
+
+        this.raiseStartedAddingNewItemCallback();
     }
 
     handleItemSelectChange(item) {
@@ -130,7 +127,7 @@ class DropDownWithAddButton extends React.Component {
             curValue: item
         });
 
-        this.raiseOnChangeCallback();
+        this.raiseOnChangeCallback(item);
     }
 
     renderAddingNewItem() {
@@ -144,20 +141,15 @@ class DropDownWithAddButton extends React.Component {
     }
 
     handleAddNewItemTextChange(newVal) {
-        let addingNewItemValid = !this.state.items.includes(newVal);
+        //let addingNewItemValid = !this.state.items.includes(newVal);
 
         this.setState({
-            curValue: newVal,
-            addingNewItemValid: addingNewItemValid
+            curValue: newVal
         });
     }
 
     handleAddNewItem() {
-        let curItems = this.state.items.slice();
-        curItems.push(this.state.curValue);
-
         this.setState({
-            items: curItems,
             addingNewItem: false
         });
 
@@ -171,15 +163,21 @@ class DropDownWithAddButton extends React.Component {
         });
     }
 
-    raiseOnChangeCallback() {
+    raiseOnChangeCallback(item) {
         if (this.props.onChange) {
-            this.props.onChange(this.state.curValue);
+            this.props.onChange(item);
         }
     }
 
     raiseOnNewItemAddedCallback(newItem) {
         if (this.props.onNewItemAdded) {
             this.props.onNewItemAdded(newItem);
+        }
+    }
+
+    raiseStartedAddingNewItemCallback() {
+        if (this.props.onStartAddNewItem) {
+            this.props.onStartAddNewItem();
         }
     }
 }

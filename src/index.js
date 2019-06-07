@@ -1,5 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DropDownWithAddButton from './DropDownWithAddButton/DropDownWithAddButton';
+import NewShotLogEntryForm from './NewShotLogEntryForm';
 
-ReactDOM.render(<DropDownWithAddButton name="Roaster"/>, document.getElementById('root'));
+ReactDOM.render(<NewShotLogEntryForm />, document.getElementById('root'));
