@@ -1,6 +1,7 @@
 import React from 'react';
 
 import DropDownWithAddButton from './DropDownWithAddButton/DropDownWithAddButton';
+import TextInputWithUnits from './TextInputWithUnits';
 
 class NewShotLogEntryForm extends React.Component {
     constructor(props) {
@@ -21,12 +22,14 @@ class NewShotLogEntryForm extends React.Component {
 
     initializeFormState() {
         this.state = {
-            roaster: "",
-            bean: "",
-            grinder_setting: "",
-            dose_amount_grams: 0,
-            brew_amount_grams: 0,
-            brew_time_seconds: 0
+            form: {
+                roaster: "",
+                bean: "",
+                grinder_setting: "",
+                dose_amount_grams: 0,
+                brew_amount_grams: 0,
+                brew_time_seconds: 0 
+            }
         }
     }
 
@@ -41,33 +44,32 @@ class NewShotLogEntryForm extends React.Component {
                     onNewItemAdded={(newItem) => this.handleNewRoasterAdded(newItem)}
                     onStartAddNewItem={() => this.handleOnStartAddingNewRoaster()} />
                 {this.renderBeansDropDownIfRoasterSelected()}
+                <TextInputWithUnits
+                    name="Dose amount"
+                    unit="grams"
+                    value={this.state.form.dose_amount_grams}
+                    onChange={(val) => this.handleValueChange("dose_amount_grams", val)} />
             </div>
         )
     }
 
     handleRoasterChanged(newVal) {
-        this.setState({
-            roaster: newVal
-        })
+        this.handleValueChange("roaster", newVal);
     }
 
     handleOnStartAddingNewRoaster() {
-        this.setState({
-            bean: "",
-            roaster: ""
-        });
+        this.handleValueChange("bean", "");
+        this.handleValueChange("roaster ", "");
     }
 
     handleNewRoasterAdded(newVal) {
         this.roasters.push(newVal);
 
-        this.setState({
-            roaster: newVal
-        });
+        this.handleValueChange("roaster", newVal);
     }
 
     renderBeansDropDownIfRoasterSelected() {
-        let roaster = this.state.roaster;
+        let roaster = this.state.form.roaster;
         
         if (roaster) {
             let beansForRoaster = this.beans[roaster];
@@ -89,14 +91,20 @@ class NewShotLogEntryForm extends React.Component {
     }
 
     handleNewBeanSelected(bean) {
-        this.setState({
-            bean: bean
-        });
+        this.handleValueChange("bean", bean);
     }
 
     handleNewBeanTypeAdded(bean) {
         let beansForRoaster = this.beans[this.state.roaster];
         beansForRoaster.push(bean);
+    }
+
+    handleValueChange(val_name, value) {
+        let form = {...this.state.form};
+        form[val_name] = value;
+        this.setState({
+            form: form
+        });
     }
 }
 
