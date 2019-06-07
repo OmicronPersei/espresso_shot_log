@@ -33,7 +33,6 @@ class NewShotLogEntryForm extends React.Component {
         }
     }
 
-
     render() {
         return (
             <div>
@@ -69,11 +68,12 @@ class NewShotLogEntryForm extends React.Component {
 
     handleOnStartAddingNewRoaster() {
         this.handleValueChange("bean", "");
-        this.handleValueChange("roaster ", "");
+        this.handleValueChange("roaster", "");
     }
 
     handleNewRoasterAdded(newVal) {
         this.roasters.push(newVal);
+        this.beans[newVal] = [];
 
         this.handleValueChange("roaster", newVal);
     }
@@ -105,7 +105,7 @@ class NewShotLogEntryForm extends React.Component {
     }
 
     handleNewBeanTypeAdded(bean) {
-        let beansForRoaster = this.beans[this.state.roaster];
+        let beansForRoaster = this.beans[this.state.form.roaster];
         beansForRoaster.push(bean);
     }
 

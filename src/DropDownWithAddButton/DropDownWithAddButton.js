@@ -11,6 +11,8 @@ import AddIcon from '@material-ui/icons/Add';
 import './style.css';
 import { IconButton } from '@material-ui/core';
 
+import DropDown from '../DropDown/DropDown';
+
 //Using the below style is affected by the known [issue](https://github.com/facebook/react/issues/13991)
 
 // const buttonUseStyles = makeStyles(theme => ({
@@ -46,17 +48,12 @@ function renderMenuItemsWithAddbutton(props) {
 
     return (
         <div>
-            <FormControl>
-                <InputLabel>{props.name}</InputLabel>
-                <Select
-                    value={props.curValue}
-                    onChange={(event) => props.onChange(event.target.value)}
-                    className="selector"
-                    fullWidth={true}
-                >
-                    {menuItems}
-                </Select>
-            </FormControl>
+            <DropDown
+                name={props.name}
+                value={props.value}
+                items={props.items}
+                onChange={x => props.onChange(x)} 
+            />
             <IconButton onClick={() => props.onAddClick()} size="small" className="action-button"><AddIcon /></IconButton>
         </div>
     );
@@ -67,7 +64,7 @@ function renderNewEntryWithConfirmButton(props) {
         <div>
             <FormControl>
                 <TextField 
-                    value={props.curValue} 
+                    value={props.value} 
                     onChange={(event) => props.onTextChange(event.target.value)}
                     label={"New " + props.name.toLowerCase()}
                     className="selector"
@@ -85,7 +82,7 @@ class DropDownWithAddButton extends React.Component {
         super(props);
 
         this.state = {
-            curValue: "",
+            value: "",
             addingNewItem: false,
             addingNewItemValid: true
         };
@@ -106,7 +103,7 @@ class DropDownWithAddButton extends React.Component {
     renderMenuItemsSelect() {
         return renderMenuItemsWithAddbutton({
             items: this.props.items,
-            curValue: this.state.curValue,
+            value: this.state.value,
             onChange: (item) => this.handleItemSelectChange(item),
             onAddClick: () => this.handleAddButtonClick(),
             name: this.props.name
@@ -116,7 +113,7 @@ class DropDownWithAddButton extends React.Component {
     handleAddButtonClick() {
         this.setState({
             addingNewItem: true,
-            curValue: ""
+            value: ""
         });
 
         this.raiseStartedAddingNewItemCallback();
@@ -124,7 +121,7 @@ class DropDownWithAddButton extends React.Component {
 
     handleItemSelectChange(item) {
         this.setState({
-            curValue: item
+            value: item
         });
 
         this.raiseOnChangeCallback(item);
@@ -136,7 +133,7 @@ class DropDownWithAddButton extends React.Component {
             onTextChange: (newVal) => this.handleAddNewItemTextChange(newVal),
             onAddConfirmed: () => this.handleAddNewItem(),
             onCancelClicked: () => this.handleCancelAddingNewItem(),
-            curValue: this.state.curValue
+            value: this.state.value
         });
     }
 
@@ -144,7 +141,7 @@ class DropDownWithAddButton extends React.Component {
         //let addingNewItemValid = !this.state.items.includes(newVal);
 
         this.setState({
-            curValue: newVal
+            value: newVal
         });
     }
 
@@ -153,13 +150,13 @@ class DropDownWithAddButton extends React.Component {
             addingNewItem: false
         });
 
-        this.raiseOnNewItemAddedCallback(this.state.curValue);
+        this.raiseOnNewItemAddedCallback(this.state.value);
     }
 
     handleCancelAddingNewItem() {
         this.setState({
             addingNewItem: false,
-            curValue: ""
+            value: ""
         });
     }
 
