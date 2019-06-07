@@ -95,7 +95,7 @@ class DropDownWithAddButton extends React.Component {
         let addingNewItem = this.state.addingNewItem;
         
         return (
-            <div style={{margin: 'auto'}}>
+            <div>
                 {addingNewItem ? 
                     this.renderAddingNewItem() 
                     : this.renderMenuItemsSelect()}

@@ -49,6 +49,16 @@ class NewShotLogEntryForm extends React.Component {
                     unit="grams"
                     value={this.state.form.dose_amount_grams}
                     onChange={(val) => this.handleValueChange("dose_amount_grams", val)} />
+                <TextInputWithUnits
+                    name="Brew amount"
+                    unit="grams"
+                    value={this.state.form.brew_amount_grams}
+                    onChange={(val) => this.handleValueChange("brew_amount_grams", val)} />
+                <TextInputWithUnits
+                    name="Brew time"
+                    unit="seconds"
+                    value={this.state.form.brew_time_seconds}
+                    onChange={(val) => this.handleValueChange("brew_time_seconds", val)} />
             </div>
         )
     }
