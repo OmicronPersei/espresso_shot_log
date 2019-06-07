@@ -52,11 +52,12 @@ function renderMenuItemsWithAddbutton(props) {
                     value={props.curValue}
                     onChange={(event) => props.onChange(event.target.value)}
                     className="selector"
+                    fullWidth={true}
                 >
                     {menuItems}
                 </Select>
             </FormControl>
-            <IconButton onClick={() => props.onAddClick()} size="small"><AddIcon /></IconButton>
+            <IconButton onClick={() => props.onAddClick()} size="small" className="action-button"><AddIcon /></IconButton>
         </div>
     );
 }
@@ -69,10 +70,11 @@ function renderNewEntryWithConfirmButton(props) {
                     value={props.curValue} 
                     onChange={(event) => props.onTextChange(event.target.value)}
                     label={"New " + props.name.toLowerCase()}
-                    className="selector"></TextField>
+                    className="selector"
+                    fullWidth={true}></TextField>
             </FormControl>
-            <IconButton onClick={props.onAddConfirmed} size="small"><DoneIcon /></IconButton>
-            <IconButton onClick={props.onCancelClicked} size="small"><DeleteIcon /></IconButton>
+            <IconButton onClick={props.onAddConfirmed} size="small" className="action-button"><DoneIcon /></IconButton>
+            <IconButton onClick={props.onCancelClicked} size="small" className="action-button"><DeleteIcon /></IconButton>
         </div>
     );
 }
@@ -98,7 +100,7 @@ class DropDownWithAddButton extends React.Component {
         let addingNewItem = this.state.addingNewItem;
         
         return (
-            <div variant="outlined">
+            <div style={{margin: 'auto'}}>
                 {addingNewItem ? 
                     this.renderAddingNewItem() 
                     : this.renderMenuItemsSelect()}
