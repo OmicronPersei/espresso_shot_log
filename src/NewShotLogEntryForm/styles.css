@@ -3,7 +3,7 @@
     margin: auto;
 }
 
-@media all and (min-width: 960px) {
+@media all and (min-width: 600px) {
     .form-item.left {
         margin: auto;
         margin-right: 0;

@@ -40,10 +40,6 @@ class NewShotLogEntryForm extends React.Component {
 
         this.bitter_sour_vals = bitter_sour_vals;
         
-        this.initializeFormState();
-    }
-
-    initializeFormState() {
         this.state = {
             form: {
                 roaster: "",
@@ -55,93 +51,88 @@ class NewShotLogEntryForm extends React.Component {
                 bitter_sour: "",
                 issues: ""
             }
-        }
+        };
     }
 
     render() {
-        let gridItemStyle = {
-            "width": "300px"
-        };
         return (
             <div>
-                {/* <Grid item sm={6} xs={6} md={5} justify="center"> */}
-                    <Grid container spacing={2} justify="center" alignContent="center" alignItems="center">
-                        <Grid item sm={12} xs={12} md={3}  justify="center">
-                            <div className="form-item left">
-                                <DropDownWithAddButton 
-                                    items={this.roasters} 
-                                    name="Roaster" 
-                                    onChange={val => this.handleValueChange("roaster", val)}
-                                    onNewItemAdded={(newItem) => this.handleNewRoasterAdded(newItem)}
-                                    onStartAddNewItem={() => this.handleOnStartAddingNewRoaster()} />
-                            </div>
-                        </Grid>
-                        <Grid item sm={12} xs={12} md={3}  justify="center">
-                            {this.renderBeansDropDownIfRoasterSelected()}
-                        </Grid>
+                <Grid container spacing={2} justify="center" alignContent="center" alignItems="center">
+                    <Grid item sm={6} xs={12} md={6}  justify="center">
+                        <div className="form-item left">
+                            <DropDownWithAddButton 
+                                items={this.roasters} 
+                                name="Roaster" 
+                                onChange={val => this.handleValueChange("roaster", val)}
+                                onNewItemAdded={(newItem) => this.handleNewRoasterAdded(newItem)}
+                                onStartAddNewItem={() => this.handleOnStartAddingNewRoaster()} />
+                        </div>
                     </Grid>
-                    <Grid container spacing={2} justify="center">
-                        <Grid item sm={12} xs={12} md={3} justify="center">
-                            <div className="form-item left">
-                                <TextInputWithUnits
-                                    name="Grinder setting"
-                                    unit=""
-                                    value={this.state.form.grinder_setting}
-                                    onChange={val => this.handleValueChange("grinder_setting", val)} />
-                            </div>
-                        </Grid>
-                        <Grid item sm={12} xs={12} md={3} justify="center" >
-                            <div className="form-item right">
-                                <TextInputWithUnits
-                                    name="Dose amount"
-                                    unit="grams"
-                                    value={this.state.form.dose_amount_grams}
-                                    onChange={val => this.handleValueChange("dose_amount_grams", val)} />
-                            </div>
-                        </Grid>
+                    <Grid item sm={6} xs={12} md={6}  justify="center">
+                        {this.renderBeansDropDownIfRoasterSelected()}
                     </Grid>
-                    <Grid container spacing={2} justify="center">
-                        <Grid item sm={12} xs={12} md={3} justify="center">
-                            <div className="form-item left">
-                                <TextInputWithUnits
-                                    name="Brew amount"
-                                    unit="grams"
-                                    value={this.state.form.brew_amount_grams}
-                                    onChange={val => this.handleValueChange("brew_amount_grams", val)} />
-                            </div>
-                        </Grid>
-                        <Grid item sm={12} xs={12} md={3} justify="center">
-                            <div className="form-item right">
-                                <TextInputWithUnits
-                                    name="Brew time"
-                                    unit="seconds"
-                                    value={this.state.form.brew_time_seconds}
-                                    onChange={val => this.handleValueChange("brew_time_seconds", val)} />
-                            </div>
-                        </Grid>
+                </Grid>
+                <Grid container spacing={2} justify="center">
+                    <Grid item sm={6} xs={12} md={6} justify="center">
+                        <div className="form-item left">
+                            <TextInputWithUnits
+                                name="Grinder setting"
+                                unit=""
+                                value={this.state.form.grinder_setting}
+                                onChange={val => this.handleValueChange("grinder_setting", val)} />
+                        </div>
                     </Grid>
-                    <Grid container spacing={2} justify="center">
-                        <Grid item sm={12} xs={12} md={3} justify="center">
-                            <div className="form-item left">
-                                <DropDown
-                                    name="Bitterness/sourness"
-                                    items={this.bitter_sour_vals}
-                                    value={this.state.form.bitter_sour}
-                                    onChange={val => this.handleValueChange("bitter_sour", val)} />
-                            </div>
-                        </Grid>
-                        <Grid item sm={12} xs={12} md={3} justify="center">
-                            <div className="form-item right">
-                                <DropDownWithAddButton
-                                    name="Issues?"
-                                    items={this.issues}
-                                    value={this.state.form.issues}
-                                    onChange={val => this.handleValueChange("issues", val)}
-                                    onNewItemAdded={val => this.handleNewIssueAdded(val)} />
-                            </div>
-                        </Grid>
+                    <Grid item sm={6} xs={12} md={6} justify="center" >
+                        <div className="form-item right">
+                            <TextInputWithUnits
+                                name="Dose amount"
+                                unit="grams"
+                                value={this.state.form.dose_amount_grams}
+                                onChange={val => this.handleValueChange("dose_amount_grams", val)} />
+                        </div>
                     </Grid>
-                {/* </Grid> */}
+                </Grid>
+                <Grid container spacing={2} justify="center">
+                    <Grid item sm={6} xs={12} md={6} justify="center">
+                        <div className="form-item left">
+                            <TextInputWithUnits
+                                name="Brew amount"
+                                unit="grams"
+                                value={this.state.form.brew_amount_grams}
+                                onChange={val => this.handleValueChange("brew_amount_grams", val)} />
+                        </div>
+                    </Grid>
+                    <Grid item sm={6} xs={12} md={6} justify="center">
+                        <div className="form-item right">
+                            <TextInputWithUnits
+                                name="Brew time"
+                                unit="seconds"
+                                value={this.state.form.brew_time_seconds}
+                                onChange={val => this.handleValueChange("brew_time_seconds", val)} />
+                        </div>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2} justify="center">
+                    <Grid item sm={6} xs={12} md={6} justify="center">
+                        <div className="form-item left">
+                            <DropDown
+                                name="Bitterness/sourness"
+                                items={this.bitter_sour_vals}
+                                value={this.state.form.bitter_sour}
+                                onChange={val => this.handleValueChange("bitter_sour", val)} />
+                        </div>
+                    </Grid>
+                    <Grid item sm={6} xs={12} md={6} justify="center">
+                        <div className="form-item right">
+                            <DropDownWithAddButton
+                                name="Issues?"
+                                items={this.issues}
+                                value={this.state.form.issues}
+                                onChange={val => this.handleValueChange("issues", val)}
+                                onNewItemAdded={val => this.handleNewIssueAdded(val)} />
+                        </div>
+                    </Grid>
+                </Grid>
             </div>
         )
     }

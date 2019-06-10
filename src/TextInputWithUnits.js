@@ -1,11 +1,7 @@
 import React from 'react';
-import { Input, InputAdornment, FormHelperText, FormControl, TextField } from '@material-ui/core';
+import { InputAdornment, FormControl, TextField } from '@material-ui/core';
 
 class TextInputWithUnits extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         
         return (
