@@ -1,0 +1,15 @@
+.form-item {
+    max-width: 250px;
+    margin: auto;
+}
+
+@media all and (min-width: 960px) {
+    .form-item.left {
+        margin: auto;
+        margin-right: 0;
+    }
+    .form-item.right {
+        margin: auto;
+        margin-left: 0;
+    }
+}
