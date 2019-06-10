@@ -2,9 +2,9 @@ import React from 'react';
 
 import Grid from '@material-ui/core/Grid';
 
-import DropDownWithAddButton from './DropDownWithAddButton/DropDownWithAddButton';
-import DropDown from './DropDown/DropDown';
-import TextInputWithUnits from './TextInputWithUnits';
+import DropDownWithAddButton from '../DropDownWithAddButton/DropDownWithAddButton';
+import DropDown from '../DropDown/DropDown';
+import TextInputWithUnits from '../TextInputWithUnits';
 
 class NewShotLogEntryForm extends React.Component {
     constructor(props) {
