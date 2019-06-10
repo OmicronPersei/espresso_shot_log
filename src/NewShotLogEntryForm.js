@@ -59,7 +59,7 @@ class NewShotLogEntryForm extends React.Component {
     render() {
         return (
             <Grid container spacing={3} justify="center">
-                <Grid item sm={10} xs={10} md={6}>
+                <Grid item sm={6} xs={6} md={5}>
                     <Grid container spacing={2}>
                         <Grid item sm={12} xs={12} md={6}>
                             <DropDownWithAddButton 
