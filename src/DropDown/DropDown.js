@@ -27,7 +27,7 @@ function DropDown(props) {
     menuItems = menuItems.concat(defaultMenuItems);
 
     return (
-        <FormControl>
+        <FormControl fullWidth={true}>
             <InputLabel>{props.name}</InputLabel>
             <Select
                 value={props.value}

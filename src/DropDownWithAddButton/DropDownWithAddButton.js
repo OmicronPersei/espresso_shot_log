@@ -45,34 +45,47 @@ function renderMenuItemsWithAddbutton(props) {
     );
 
     menuItems = menuItems.concat(defaultMenuItems);
-
+    
     return (
-        <div>
-            <DropDown
-                name={props.name}
-                value={props.value}
-                items={props.items}
-                onChange={x => props.onChange(x)} 
-            />
-            <IconButton onClick={() => props.onAddClick()} size="small" className="action-button"><AddIcon /></IconButton>
-        </div>
+        <table className="drop-down-table">
+            <tr>
+                <td className="drop-down-select">
+                    <DropDown
+                        name={props.name}
+                        value={props.value}
+                        items={props.items}
+                        onChange={x => props.onChange(x)} 
+                        fullWidth={true}
+                    />
+                </td>
+                <td className="drop-down-button">
+                    <IconButton onClick={() => props.onAddClick()} size="small" className="action-button"><AddIcon /></IconButton>
+                </td>
+            </tr>
+        </table>
     );
 }
 
 function renderNewEntryWithConfirmButton(props) {
     return (
-        <div>
-            <FormControl>
-                <TextField 
-                    value={props.value} 
-                    onChange={(event) => props.onTextChange(event.target.value)}
-                    label={"New " + props.name.toLowerCase()}
-                    className="selector"
-                    fullWidth={true}></TextField>
-            </FormControl>
-            <IconButton onClick={props.onAddConfirmed} size="small" className="action-button"><DoneIcon /></IconButton>
-            <IconButton onClick={props.onCancelClicked} size="small" className="action-button"><DeleteIcon /></IconButton>
-        </div>
+        <table className="drop-down-table">
+            <tr>
+                <td className="drop-down-select">
+                    <TextField 
+                        value={props.value} 
+                        onChange={(event) => props.onTextChange(event.target.value)}
+                        label={"New " + props.name.toLowerCase()}
+                        className="selector"
+                        fullWidth={true}></TextField>
+                </td>
+                <td className="drop-down-button">
+                    <IconButton onClick={props.onAddConfirmed} size="small" className="action-button"><DoneIcon /></IconButton>
+                </td>
+                <td className="drop-down-button">
+                    <IconButton onClick={props.onCancelClicked} size="small" className="action-button"><DeleteIcon /></IconButton>
+                </td>
+            </tr>
+        </table>
     );
 }
 
