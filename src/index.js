@@ -1,5 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import NewShotLogEntryForm from './NewShotLogEntryForm/NewShotLogEntryForm';
+import ShotRecordsDisplay from './ShotRecordsDisplay/ShotRecordsDisplay';
 
-ReactDOM.render(<NewShotLogEntryForm />, document.getElementById('root'));
+ReactDOM.render(<ShotRecordsDisplay />, document.getElementById('root'));
