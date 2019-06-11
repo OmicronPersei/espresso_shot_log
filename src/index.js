@@ -1,5 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ShotRecordsDisplay from './ShotRecordsDisplay/ShotRecordsDisplay';
+import ShotRecordsTable from './ShotRecordsDisplay/ShotRecordsTable/ShotRecordsTable';
 
-ReactDOM.render(<ShotRecordsDisplay />, document.getElementById('root'));
+ReactDOM.render(<ShotRecordsTable />, document.getElementById('root'));
