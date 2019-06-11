@@ -23,7 +23,7 @@ class ShotRecordsTable extends React.Component {
                 dose_amount_grams: 18,
                 brew_amount_grams: 24,
                 brew_time_seconds: 35,
-                bitter_sour: "+1 (bitter)",
+                bitter_sour: "+2 (bitter)",
                 issues: "",
                 id: 1
             },
@@ -34,7 +34,7 @@ class ShotRecordsTable extends React.Component {
                 dose_amount_grams: 18,
                 brew_amount_grams: 24,
                 brew_time_seconds: 36,
-                bitter_sour: "+1 (bitter)",
+                bitter_sour: "+3 (bitter)",
                 issues: "",
                 id: 2
             },
@@ -96,14 +96,13 @@ class ShotRecordsTable extends React.Component {
             return shotDisplayRecords;
         }
         let getValForSorting = val => val[this.state.sortedColId];
-
         return shotDisplayRecords.sort((a,b) => {
             let aVal = getValForSorting(a);
             let bVal = getValForSorting(b);
             if (this.state.sortOrder === "asc") {
-                return aVal > bVal;
+                return aVal - bVal;
             } else {
-                return aVal < bVal;
+                return bVal - aVal;
             }
         });
     }
@@ -182,8 +181,8 @@ function SortableTableHeader(props) {
                     key={c.id}
                     sortDirection={props.sortedColId === c.id ? props.order : false}>
                     <TableSortLabel
-                        active={props.sortedColId === c.id}
-                        direction={props.order || "desc"}
+                        active={props.order && (props.sortedColId === c.id)}
+                        direction={props.order || undefined}
                         onClick={() => props.onChangeSortedCol(c.id)}
                     >
                         {c.label}
