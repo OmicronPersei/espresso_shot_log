@@ -7,51 +7,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 
-
-
 class ShotRecordsTable extends React.Component {
 
     constructor(props) {
         super(props);
 
-        //mock data for testing
-        this.shot_records = [
-            {
-                roaster: "Counter culture",
-                bean: "Apollo",
-                grinder_setting: "1.8",
-                dose_amount_grams: 18,
-                brew_amount_grams: 24,
-                brew_time_seconds: 35,
-                bitter_sour: "+2 (bitter)",
-                issues: "",
-                id: 1
-            },
-            {
-                roaster: "Counter culture",
-                bean: "Bsdfasdf",
-                grinder_setting: "1.8",
-                dose_amount_grams: 18,
-                brew_amount_grams: 24,
-                brew_time_seconds: 36,
-                bitter_sour: "+33 (bitter)",
-                issues: "",
-                id: 2
-            },
-            {
-                roaster: "Counter culture",
-                bean: "Csfsdf",
-                grinder_setting: "1.8",
-                dose_amount_grams: 18,
-                brew_amount_grams: 24,
-                brew_time_seconds: 37,
-                bitter_sour: "+1 (bitter)",
-                issues: "",
-                id: 3
-            }
-        ];
-
-        //todo: refactor to not need the `id` prop here.
         this.cols = [
             { label: "Roaster", sortable: true, id: "roaster", sortAsNumber: false },
             { label: "Bean", sortable: true, id: "bean", sortAsNumber: false },
@@ -69,7 +29,7 @@ class ShotRecordsTable extends React.Component {
     }
 
     render() {
-        let shotDisplayRecords = this.mapToShotDisplayRecords(this.shot_records);
+        let shotDisplayRecords = this.mapToShotDisplayRecords(this.props.shots);
 
         shotDisplayRecords = this.sortDisplayRecords(shotDisplayRecords);
         
@@ -92,7 +52,7 @@ class ShotRecordsTable extends React.Component {
     }
 
     sortDisplayRecords(shotDisplayRecords) {
-        if (!this.state.sortedColId) {
+        if (!this.state.sortedColId || !this.state.sortOrder) {
             return shotDisplayRecords;
         }
         let getValForSorting = val => val[this.state.sortedColId];
@@ -141,22 +101,12 @@ class ShotRecordsTable extends React.Component {
 
         return (
             <Table>
-                {SortableTableHeader(headerProps)}
+                {RenderSortableTableHeader(headerProps)}
                 <TableBody>
-                {this.renderAllCells(shotDisplayRecords)}
+                {RenderCells(shotDisplayRecords, this.cols)}
                 </TableBody>
             </Table>
         );
-    }
-
-    renderAllCells(shotDisplayRecords) {
-        return shotDisplayRecords.map(shotRecord => (
-            <TableRow key={shotRecord.id}>
-                {this.cols.map(col => (
-                    <TableCell key={col.id}>{shotRecord[col.id]}</TableCell>
-                ))}
-            </TableRow>
-        ));
     }
 
     handleChangeSortedCol(colId) {
@@ -194,7 +144,7 @@ class ShotRecordsTable extends React.Component {
 
 export default ShotRecordsTable;
 
-function SortableTableHeader(props) {
+function RenderSortableTableHeader(props) {
 
     return (
         <TableHead>
@@ -215,4 +165,14 @@ function SortableTableHeader(props) {
             </TableRow>
         </TableHead>
     );
+}
+
+function RenderCells(shotDisplayRecords, cols) {
+    return shotDisplayRecords.map(shotRecord => (
+        <TableRow key={shotRecord.id}>
+            {cols.map(col => (
+                <TableCell key={col.id}>{shotRecord[col.id]}</TableCell>
+            ))}
+        </TableRow>
+    ));
 }
