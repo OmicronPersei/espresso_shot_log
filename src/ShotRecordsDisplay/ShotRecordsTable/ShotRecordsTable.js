@@ -7,6 +7,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 
+
+
 class ShotRecordsTable extends React.Component {
 
     constructor(props) {
@@ -22,7 +24,8 @@ class ShotRecordsTable extends React.Component {
                 brew_amount_grams: 24,
                 brew_time_seconds: 35,
                 bitter_sour: "+1 (bitter)",
-                issues: ""
+                issues: "",
+                id: 1
             },
             {
                 roaster: "Counter culture",
@@ -32,7 +35,8 @@ class ShotRecordsTable extends React.Component {
                 brew_amount_grams: 24,
                 brew_time_seconds: 36,
                 bitter_sour: "+1 (bitter)",
-                issues: ""
+                issues: "",
+                id: 2
             },
             {
                 roaster: "Counter culture",
@@ -42,7 +46,8 @@ class ShotRecordsTable extends React.Component {
                 brew_amount_grams: 24,
                 brew_time_seconds: 37,
                 bitter_sour: "+1 (bitter)",
-                issues: ""
+                issues: "",
+                id: 3
             }
         ];
 
@@ -53,6 +58,7 @@ class ShotRecordsTable extends React.Component {
             { label: "Dose", sortable: true, id: "dose_amount" },
             { label: "Brew Amount", sortable: true, id: "brew_amount" },
             { label: "Brew Ratio", sortable: true, id: "brew_ratio" },
+            { label: "Brew time", sortable: true, id: "brew_time_seconds" },
             { label: "Bitterness/sourness", sortable: true, id: "bitter_sour" },
         ];
         
@@ -78,7 +84,9 @@ class ShotRecordsTable extends React.Component {
                 dose_amount: x.dose_amount_grams,
                 brew_amount: x.brew_amount_grams,
                 brew_ratio: x.brew_amount_grams / x.dose_amount_grams,
-                bitter_sour: x.bitter_sour
+                brew_time_seconds: x.brew_time_seconds,
+                bitter_sour: x.bitter_sour,
+                id: x.id
             };
         });
     }
@@ -113,19 +121,20 @@ class ShotRecordsTable extends React.Component {
             <Table>
                 {SortableTableHeader(headerProps)}
                 <TableBody>
-                {shotDisplayRecords.map(x => (
-                    <TableRow>
-                        <TableCell>{x.roaster}</TableCell>
-                        <TableCell>{x.bean}</TableCell>
-                        <TableCell>{x.dose_amount}</TableCell>
-                        <TableCell>{x.brew_amount}</TableCell>
-                        <TableCell>{this.roundToThreeDecimalPlaces(x.brew_ratio)}</TableCell>
-                        <TableCell>{x.bitter_sour}</TableCell>
-                    </TableRow>
-                ))}
+                {this.renderAllCells(shotDisplayRecords)}
                 </TableBody>
             </Table>
         );
+    }
+
+    renderAllCells(shotDisplayRecords) {
+        return shotDisplayRecords.map(shotRecord => (
+            <TableRow>
+                {this.cols.map(col => (
+                    <TableCell key={shotRecord.id}>{shotRecord[col.id]}</TableCell>
+                ))}
+            </TableRow>
+        ));
     }
 
     handleChangeSortedCol(colId) {
@@ -173,8 +182,8 @@ function SortableTableHeader(props) {
                 sortDirection={props.sortedColId === c.id ? props.order : false}>
                 <TableSortLabel
                     active={props.sortedColId === c.id}
-                    direction={props.order}
-                    onClick={props.onChangeSortedCol(c.id)}
+                    direction={props.order || "desc"}
+                    onClick={() => props.onChangeSortedCol(c.id)}
                 >
                     {c.label}
                 </TableSortLabel>
