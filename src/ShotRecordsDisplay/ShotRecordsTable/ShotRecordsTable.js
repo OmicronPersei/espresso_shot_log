@@ -129,9 +129,9 @@ class ShotRecordsTable extends React.Component {
 
     renderAllCells(shotDisplayRecords) {
         return shotDisplayRecords.map(shotRecord => (
-            <TableRow>
+            <TableRow key={shotRecord.id}>
                 {this.cols.map(col => (
-                    <TableCell key={shotRecord.id}>{shotRecord[col.id]}</TableCell>
+                    <TableCell key={col.id}>{shotRecord[col.id]}</TableCell>
                 ))}
             </TableRow>
         ));
@@ -176,19 +176,21 @@ function SortableTableHeader(props) {
 
     return (
         <TableHead>
-        {props.cols.map(c => (
-            <TableCell
-                key={c.id}
-                sortDirection={props.sortedColId === c.id ? props.order : false}>
-                <TableSortLabel
-                    active={props.sortedColId === c.id}
-                    direction={props.order || "desc"}
-                    onClick={() => props.onChangeSortedCol(c.id)}
-                >
-                    {c.label}
-                </TableSortLabel>
-            </TableCell>
-        ))}
+            <TableRow>
+            {props.cols.map(c => (
+                <TableCell
+                    key={c.id}
+                    sortDirection={props.sortedColId === c.id ? props.order : false}>
+                    <TableSortLabel
+                        active={props.sortedColId === c.id}
+                        direction={props.order || "desc"}
+                        onClick={() => props.onChangeSortedCol(c.id)}
+                    >
+                        {c.label}
+                    </TableSortLabel>
+                </TableCell>
+            ))}
+            </TableRow>
         </TableHead>
     );
 }
