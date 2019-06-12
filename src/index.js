@@ -50,4 +50,9 @@ let shots = [
     }
 ];
 
-ReactDOM.render(<ShotRecordsTable shots={shots}/>, document.getElementById('root'));
+let filter = {
+    type: "roaster",
+    roaster: "Counter culture"
+}
+
+ReactDOM.render(<ShotRecordsTable shots={shots} filter={filter}/>, document.getElementById('root'));

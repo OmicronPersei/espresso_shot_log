@@ -45,6 +45,10 @@ class ShotRecordsTable extends React.Component {
     render() {
         let shotDisplayRecords = this.mapToShotDisplayRecords(this.props.shots);
 
+        if (this.props.filter) {
+            shotDisplayRecords = this.filterDisplayRecords(this.props.filter, shotDisplayRecords);
+        }
+
         shotDisplayRecords = this.sortDisplayRecords(shotDisplayRecords);
         
         return this.renderTable(shotDisplayRecords);
@@ -106,6 +110,22 @@ class ShotRecordsTable extends React.Component {
                 }
             }
         });
+    }
+
+    filterDisplayRecords(filter, shotDisplayRecords) {
+        switch (filter.type.toLowerCase()) {
+            case "bean":
+                return shotDisplayRecords.filter(r => r.bean === filter.bean);
+
+            case "roaster":
+                return shotDisplayRecords.filter(r => r.roaster === filter.roaster);
+
+            case "roaster/bean":
+                return shotDisplayRecords.filter(r => (r.roaster === filter.roaster) && (r.bean === filter.bean));
+
+            default:
+                throw new Error("Unknown filter type");
+        }
     }
     
     renderTable(shotDisplayRecords) {
