@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ShotRecordsTable from './ShotRecordsDisplay/ShotRecordsTable/ShotRecordsTable';
+import FilterSelector from './ShotRecordsDisplay/FilterSelector/FilterSelector';
 
 //mock data for testing
 let shots = [
@@ -50,9 +51,14 @@ let shots = [
     }
 ];
 
-let filter = {
-    type: "roaster",
-    roaster: "Counter culture"
-}
+let roasters = [
+    "Counter culture",
+    "Starbucks"
+];
 
-ReactDOM.render(<ShotRecordsTable shots={shots} filter={filter}/>, document.getElementById('root'));
+let beans = {
+    "Counter culture": ["Apollo", "Hologram"],
+    "Starbucks": ["House blend", "Yukon"]
+};
+
+ReactDOM.render(<FilterSelector roasters={roasters} beans={beans}/>, document.getElementById('root'));

@@ -2,7 +2,8 @@ import React from 'react';
 import { Grid, Typography, Button } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import DropDown from '../DropDown/DropDown';
+import DropDown from '../../DropDown/DropDown';
+import './style.css';
 
 export const Roaster = "Roaster";
 export const RoasterBean = "Roaster/Bean";
@@ -27,30 +28,44 @@ class FilterSelector extends React.Component {
     render() {
 
         return (
-            <Grid>
-                <Grid item xs={12}>
-                    <IconButton onClick={() => this.props.onClose()}>
-                        <CloseIcon />
-                    </IconButton>
-                </Grid>
-                <Grid item xs={5}>
-                    <Typography variant="h7">
+            <table>
+                <tbody>
+                    <tr>
+                        <td colSpan={2}>
+                            <IconButton onClick={() => this.props.onClose()} className="close-button">
+                                <CloseIcon />
+                            </IconButton>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
                         Filter type
-                    </Typography>
-                </Grid>
-                <Grid item xs={7}></Grid>
-                <Grid item xs={5}>
-                    <DropDown
-                        name="Type"
-                        value={this.state.filterType}
-                        items={this.filterTypes}
-                        onChange={x => this.setState({ filterType: x })} />
-                </Grid>
-                <Grid item xs={7}>
-                    {this.renderFilterValueSelectors()}
-                </Grid>
-            </Grid>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <DropDown
+                                name="Type"
+                                value={this.state.filterType}
+                                items={this.filterTypes}
+                                onChange={x => this.handleFilterTypeChange(x)} />
+                        </td>
+                        <td>
+                            {this.renderFilterValueSelectors()}
+                            {this.renderButtons()}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         );
+    }
+
+    handleFilterTypeChange(val) {
+        this.setState({
+            filterType: val,
+            roaster: "",
+            bean: ""
+        })
     }
 
     renderFilterValueSelectors() {
@@ -67,7 +82,7 @@ class FilterSelector extends React.Component {
                 <DropDown
                     name="Bean"
                     value={this.state.bean}
-                    items={this.props.bean[this.state.roaster]}
+                    items={this.props.beans[this.state.roaster]}
                     onChange={x => this.setState({ bean: x })} />
             ) : null}
             </div>
@@ -75,14 +90,18 @@ class FilterSelector extends React.Component {
     }
 
     shouldRenderRoasterSelector() {
-        return this.filterType = Roaster || this.filterType == RoasterBean;
+        return this.state.filterType === Roaster || this.state.filterType === RoasterBean;
     }
 
     shouldRenderBeanSelector() {
-        return this.filterType == RoasterBean;
+        return this.state.filterType == RoasterBean;
     }
 
     renderButtons() {
+        if (!this.state.filterType) {
+            return null;
+        }
+
         return (
             <div>
                 <Button color="primary" onClick={() => this.handleOnClickApply()}>
