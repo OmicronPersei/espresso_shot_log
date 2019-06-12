@@ -2,6 +2,35 @@
     float: right;
 }
 
+.buttons {
+    /* float: right; */
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+td,.buttons>.action-button {
+    padding: 0.5em;
+}
+
+.buttons>:first-child {
+    padding-right: 0;
+}
+table {
+    width: 100%;
+}
+
 td {
     vertical-align: top;
+}
+
+/* .action-button {
+    padding-right: 0;
+} */
+
+td.left {
+    width: 30%;
+}
+
+td.right {
+    width: 70%;
 }

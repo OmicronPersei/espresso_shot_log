@@ -38,19 +38,21 @@ class FilterSelector extends React.Component {
                         </td>
                     </tr>
                     <tr>
-                        <td>
-                        Filter type
+                        <td className="left">
+                            <Typography variant="body1">
+                            Filter type    
+                            </Typography>
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                        <td className="left">
                             <DropDown
                                 name="Type"
                                 value={this.state.filterType}
                                 items={this.filterTypes}
                                 onChange={x => this.handleFilterTypeChange(x)} />
                         </td>
-                        <td>
+                        <td className="right">
                             {this.renderFilterValueSelectors()}
                             {this.renderButtons()}
                         </td>
@@ -94,7 +96,7 @@ class FilterSelector extends React.Component {
     }
 
     shouldRenderBeanSelector() {
-        return this.state.filterType == RoasterBean;
+        return (this.state.filterType == RoasterBean) && this.state.roaster;
     }
 
     renderButtons() {
@@ -103,13 +105,17 @@ class FilterSelector extends React.Component {
         }
 
         return (
-            <div>
-                <Button color="primary" onClick={() => this.handleOnClickApply()}>
-                    Apply
-                </Button>
-                <Button onClick={() => this.handleOnClickClear()}>
-                    Clear
-                </Button>
+            <div className="buttons">
+                <div className="action-button">
+                    <Button variant="contained" color="primary" onClick={() => this.handleOnClickApply()} className="action-button">
+                        Apply
+                    </Button>
+                </div>
+                <div className="action-button">
+                    <Button variant="contained" onClick={() => this.handleOnClickClear()} className="action-button">
+                        Clear
+                    </Button>
+                </div>
             </div>
         );
     }
