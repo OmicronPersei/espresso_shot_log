@@ -6,6 +6,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import { Toolbar, Tooltip, IconButton, Typography } from '@material-ui/core';
+import FilterListIcon from '@material-ui/icons/FilterList';
 
 class ShotRecordsTable extends React.Component {
 
@@ -50,8 +52,17 @@ class ShotRecordsTable extends React.Component {
         }
 
         shotDisplayRecords = this.sortDisplayRecords(shotDisplayRecords);
-        
-        return this.renderTable(shotDisplayRecords);
+
+        let toolbarProps = {
+            onFilterClick: () => this.handleFilterClick()
+        };
+
+        return (
+            <div>
+                {RenderTableToolbar(toolbarProps)}
+                {this.renderTable(shotDisplayRecords)}
+            </div>
+        );
     }
 
     mapToShotDisplayRecords(shotRecords) {
@@ -61,7 +72,7 @@ class ShotRecordsTable extends React.Component {
                 bean: x.bean,
                 dose_amount: x.dose_amount_grams,
                 brew_amount: x.brew_amount_grams,
-                brew_ratio: x.brew_amount_grams / x.dose_amount_grams,
+                brew_ratio: this.roundToThreeDecimalPlaces(x.brew_amount_grams / x.dose_amount_grams),
                 brew_time_seconds: x.brew_time_seconds,
                 bitter_sour: x.bitter_sour,
                 id: x.id
@@ -112,6 +123,10 @@ class ShotRecordsTable extends React.Component {
         });
     }
 
+    handleFilterClick() {
+
+    }
+
     filterDisplayRecords(filter, shotDisplayRecords) {
         switch (filter.type.toLowerCase()) {
             case "bean":
@@ -141,7 +156,7 @@ class ShotRecordsTable extends React.Component {
             <Table>
                 {RenderSortableTableHeader(headerProps)}
                 <TableBody>
-                {RenderCells(shotDisplayRecords, this.cols)}
+                    {RenderCells(shotDisplayRecords, this.cols)}
                 </TableBody>
             </Table>
         );
@@ -182,6 +197,21 @@ class ShotRecordsTable extends React.Component {
 }
 
 export default ShotRecordsTable;
+
+function RenderTableToolbar(props) {
+    return (
+        <Toolbar>
+            <Typography variant="h6">
+                Shot history
+            </Typography>
+            <Tooltip title="Filter list">
+                <IconButton aria-label="Filter list" onClick={() => props.onFilterClick()}>
+                    <FilterListIcon />
+                </IconButton>
+            </Tooltip>
+        </Toolbar>
+    )
+}
 
 function RenderSortableTableHeader(props) {
 
