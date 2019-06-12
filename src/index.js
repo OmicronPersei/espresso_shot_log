@@ -36,6 +36,17 @@ let shots = [
         bitter_sour: "+1 (bitter)",
         issues: "",
         id: 3
+    },
+    {
+        roaster: "Counter culture",
+        bean: "Csfsdf",
+        grinder_setting: "1.8",
+        dose_amount_grams: 18,
+        brew_amount_grams: 24,
+        brew_time_seconds: 37,
+        bitter_sour: "0",
+        issues: "",
+        id: 4
     }
 ];
 
