@@ -41,6 +41,7 @@ class TableToolbar extends React.Component {
                         }}
                        >
                         <FilterSelector
+                            currentFilter={this.props.currentFilter}
                             roasters={this.props.roasters}
                             beans={this.props.beans}
                             shots={this.props.shots}

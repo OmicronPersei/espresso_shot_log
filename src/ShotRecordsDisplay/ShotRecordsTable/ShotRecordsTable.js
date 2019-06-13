@@ -144,6 +144,7 @@ class ShotRecordsTable extends React.Component {
     renderTableToolbar() {
         return (
             <TableToolbar
+                currentFilter={this.state.filter}
                 onFilterChange={filter => this.setState({ filter: filter })}
                 roasters={this.props.roasters}
                 beans={this.props.beans}

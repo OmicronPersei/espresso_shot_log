@@ -16,9 +16,9 @@ class FilterSelector extends React.Component {
         ];
 
         this.state = {
-            filterType: "",
-            roaster: "",
-            bean: ""
+            filterType: props.currentFilter.filterType,
+            roaster: props.currentFilter.roaster,
+            bean: props.currentFilter.bean
         };
     }
 
