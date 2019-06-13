@@ -5,9 +5,6 @@ import CloseIcon from '@material-ui/icons/Close';
 import DropDown from '../../DropDown/DropDown';
 import './style.css';
 
-export const Roaster = "Roaster";
-export const RoasterBean = "Roaster/Bean";
-
 class FilterSelector extends React.Component {
 
     constructor(props) {
@@ -143,3 +140,6 @@ class FilterSelector extends React.Component {
 
 
 export default FilterSelector;
+
+export const Roaster = "Roaster";
+export const RoasterBean = "Roaster/Bean";

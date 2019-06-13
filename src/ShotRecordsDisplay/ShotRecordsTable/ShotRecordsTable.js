@@ -6,8 +6,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import { Toolbar, Tooltip, IconButton, Typography } from '@material-ui/core';
+import { Toolbar, Tooltip, IconButton, Typography, Popover } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import { FilterSelector, Roaster, RoasterBean } from '../FilterSelector/FilterSelector';
 
 class ShotRecordsTable extends React.Component {
 
@@ -40,21 +41,25 @@ class ShotRecordsTable extends React.Component {
         
         this.state = {
             sortOrder: null,
-            sortedColId: null
+            sortedColId: null,
+            showFilterPopover: false
         };
     }
 
     render() {
         let shotDisplayRecords = this.mapToShotDisplayRecords(this.props.shots);
 
-        if (this.props.filter) {
-            shotDisplayRecords = this.filterDisplayRecords(this.props.filter, shotDisplayRecords);
+        if (this.state.filter) {
+            shotDisplayRecords = this.filterDisplayRecords(this.state.filter, shotDisplayRecords);
         }
 
         shotDisplayRecords = this.sortDisplayRecords(shotDisplayRecords);
 
         let toolbarProps = {
-            onFilterClick: () => this.handleFilterClick()
+            onFilterClick: () => this.setState({ showFilterPopover: true }),
+            showFilterPopover: this.state.showFilterPopover,
+            handleFilterChange: filter => this.setState({ filter: filter }),
+            onPopoverClose: () => this.setState({ showFilterPopover: false })
         };
 
         return (
@@ -123,19 +128,12 @@ class ShotRecordsTable extends React.Component {
         });
     }
 
-    handleFilterClick() {
-
-    }
-
     filterDisplayRecords(filter, shotDisplayRecords) {
-        switch (filter.type.toLowerCase()) {
-            case "bean":
-                return shotDisplayRecords.filter(r => r.bean === filter.bean);
-
-            case "roaster":
+        switch (filter.filterType.toLowerCase()) {
+            case Roaster:
                 return shotDisplayRecords.filter(r => r.roaster === filter.roaster);
 
-            case "roaster/bean":
+            case RoasterBean:
                 return shotDisplayRecords.filter(r => (r.roaster === filter.roaster) && (r.bean === filter.bean));
 
             default:
@@ -208,6 +206,14 @@ function RenderTableToolbar(props) {
                 <IconButton aria-label="Filter list" onClick={() => props.onFilterClick()}>
                     <FilterListIcon />
                 </IconButton>
+                <Popover
+                    open={props.showFilterPopover}
+                    onClose={() => props.onPopoverClose()}>
+                    <FilterSelector
+                        roasters={props.roasters}
+                        beans={props.beans}
+                        onFilterChange={filter => props.onFilterChange(filter)} />
+                </Popover>
             </Tooltip>
         </Toolbar>
     )
