@@ -30,14 +30,14 @@ class TableToolbar extends React.Component {
                         id={id}
                         open={this.state.open}
                         onClose={() => this.handleOnPopoverClose()}
-                        anchorEl={this.state.anchorEl}
+                        anchorEl={this.state.anchorEl || undefined}
                         anchorOrigin={{
                             vertical: 'bottom',
-                            horizontal: 'center',
+                            horizontal: 'left',
                         }}
                         transformOrigin={{
                             vertical: 'top',
-                            horizontal: 'center',
+                            horizontal: 'left',
                         }}
                        >
                         <FilterSelector

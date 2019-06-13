@@ -23,6 +23,10 @@ td {
     vertical-align: top;
 }
 
+tr.header>td {
+    vertical-align: middle;
+}
+
 /* .action-button {
     padding-right: 0;
 } */

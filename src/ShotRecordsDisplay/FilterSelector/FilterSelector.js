@@ -27,18 +27,16 @@ class FilterSelector extends React.Component {
         return (
             <table>
                 <tbody>
-                    <tr>
-                        <td colSpan={2}>
-                            <IconButton onClick={() => this.props.onClose()} className="close-button">
-                                <CloseIcon />
-                            </IconButton>
-                        </td>
-                    </tr>
-                    <tr>
+                    <tr className="header">
                         <td className="left">
                             <Typography variant="body1">
                             Filter type    
                             </Typography>
+                        </td>
+                        <td>
+                            <IconButton onClick={() => this.props.onClose()} className="close-button">
+                                <CloseIcon />
+                            </IconButton>
                         </td>
                     </tr>
                     <tr>
