@@ -194,7 +194,7 @@ class ShotRecordsTable extends React.Component {
     }
 }
 
-export default ShotRecordsTable;
+
 
 function RenderTableToolbar(props) {
     return (
@@ -251,3 +251,5 @@ function RenderCells(shotDisplayRecords, cols) {
         </TableRow>
     ));
 }
+
+export default ShotRecordsTable;

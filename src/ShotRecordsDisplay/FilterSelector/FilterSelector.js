@@ -139,7 +139,9 @@ class FilterSelector extends React.Component {
 }
 
 
-export default FilterSelector;
+
 
 export const Roaster = "Roaster";
 export const RoasterBean = "Roaster/Bean";
+
+export default FilterSelector;
