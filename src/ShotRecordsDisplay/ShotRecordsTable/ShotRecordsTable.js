@@ -8,7 +8,8 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import { Toolbar, Tooltip, IconButton, Typography, Popover } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import { FilterSelector, Roaster, RoasterBean } from '../FilterSelector/FilterSelector';
+import FilterSelector from '../FilterSelector/FilterSelector';
+import { Roaster, RoasterBean } from '../FilterSelector/FilterSelector';
 
 class ShotRecordsTable extends React.Component {
 
@@ -55,16 +56,9 @@ class ShotRecordsTable extends React.Component {
 
         shotDisplayRecords = this.sortDisplayRecords(shotDisplayRecords);
 
-        let toolbarProps = {
-            onFilterClick: () => this.setState({ showFilterPopover: true }),
-            showFilterPopover: this.state.showFilterPopover,
-            handleFilterChange: filter => this.setState({ filter: filter }),
-            onPopoverClose: () => this.setState({ showFilterPopover: false })
-        };
-
         return (
             <div>
-                {RenderTableToolbar(toolbarProps)}
+                {this.renderTableToolbar()}
                 {this.renderTable(shotDisplayRecords)}
             </div>
         );
@@ -140,6 +134,19 @@ class ShotRecordsTable extends React.Component {
                 throw new Error("Unknown filter type");
         }
     }
+
+    renderTableToolbar() {
+        return (
+            <TableToolbar
+                onFilterClick={() => this.setState({ showFilterPopover: true })}
+                showFilterPopover={this.state.showFilterPopover}
+                handleFilterChange={filter => this.setState({ filter: filter })}
+                onPopoverClose={() => this.setState({ showFilterPopover: false })}
+                roasters={this.props.roasters}
+                beans={this.props.beans}
+            />
+        )
+    }
     
     renderTable(shotDisplayRecords) {
         
@@ -196,31 +203,50 @@ class ShotRecordsTable extends React.Component {
 
 
 
-function RenderTableToolbar(props) {
-    return (
-        <Toolbar>
-            <Typography variant="h6">
-                Shot history
-            </Typography>
-            <Tooltip title="Filter list">
-                <IconButton aria-label="Filter list" onClick={() => props.onFilterClick()}>
-                    <FilterListIcon />
-                </IconButton>
-                <Popover
-                    open={props.showFilterPopover}
-                    onClose={() => props.onPopoverClose()}>
-                    <FilterSelector
-                        roasters={props.roasters}
-                        beans={props.beans}
-                        onFilterChange={filter => props.onFilterChange(filter)} />
-                </Popover>
-            </Tooltip>
-        </Toolbar>
-    )
+class TableToolbar extends React.Component {
+    
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            anchorEl: null
+        };
+    }
+
+    render() {
+        return (
+            <Toolbar>
+                <Typography variant="h6">
+                    Shot history
+                </Typography>
+                <Tooltip title="Filter list">
+                    <IconButton aria-label="Filter list" onClick={event => this.handleFilterIconClick(event)}>
+                        <FilterListIcon />
+                    </IconButton>
+                    <Popover
+                        open={this.props.showFilterPopover}
+                        onClose={() => this.props.onPopoverClose()}
+                        anchorEl={this.state.anchorElement}>
+                        <FilterSelector
+                            roasters={this.props.roasters}
+                            beans={this.props.beans}
+                            onFilterChange={filter => this.props.onFilterChange(filter)} />
+                    </Popover>
+                </Tooltip>
+            </Toolbar>
+        );
+    }
+
+    handleFilterIconClick(event) {
+        this.setState({
+            anchorEl: event.currentTarget
+        });
+        
+        this.props.onFilterClick();
+    }
 }
 
 function RenderSortableTableHeader(props) {
-
     return (
         <TableHead>
             <TableRow>

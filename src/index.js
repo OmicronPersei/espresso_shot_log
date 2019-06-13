@@ -61,4 +61,4 @@ let beans = {
     "Starbucks": ["House blend", "Yukon"]
 };
 
-ReactDOM.render(<ShotRecordsTable shots={shots} />, document.getElementById('root'));
+ReactDOM.render(<ShotRecordsTable shots={shots} roasters={roasters} beans={beans} />, document.getElementById('root'));
