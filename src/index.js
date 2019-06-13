@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ShotRecordsTable from './ShotRecordsDisplay/ShotRecordsTable/ShotRecordsTable';
+// import ShotRecordsTable from './ShotRecordsDisplay/ShotRecordsTable/ShotRecordsTable';
 // import FilterSelector from './ShotRecordsDisplay/FilterSelector/FilterSelector';
+import TableToolbar from './ShotRecordsDisplay/ShotRecordsTable/TableToolbar';
 
 //mock data for testing
 let shots = [
@@ -61,4 +62,4 @@ let beans = {
     "Starbucks": ["House blend", "Yukon"]
 };
 
-ReactDOM.render(<ShotRecordsTable shots={shots} roasters={roasters} beans={beans} />, document.getElementById('root'));
+ReactDOM.render(<TableToolbar shots={shots} roasters={roasters} beans={beans} showFilterPopover={true} />, document.getElementById('root'));

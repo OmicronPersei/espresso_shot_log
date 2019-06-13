@@ -6,10 +6,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import { Toolbar, Tooltip, IconButton, Typography, Popover } from '@material-ui/core';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import FilterSelector from '../FilterSelector/FilterSelector';
 import { Roaster, RoasterBean } from '../FilterSelector/FilterSelector';
+import TableToolbar from './TableToolbar';
 
 class ShotRecordsTable extends React.Component {
 
@@ -198,51 +196,6 @@ class ShotRecordsTable extends React.Component {
 
     roundToThreeDecimalPlaces(num) {
         return Math.round(num * 1000) / 1000;
-    }
-}
-
-
-
-class TableToolbar extends React.Component {
-    
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            anchorEl: null
-        };
-    }
-
-    render() {
-        return (
-            <Toolbar>
-                <Typography variant="h6">
-                    Shot history
-                </Typography>
-                <Tooltip title="Filter list">
-                    <IconButton aria-label="Filter list" onClick={event => this.handleFilterIconClick(event)}>
-                        <FilterListIcon />
-                    </IconButton>
-                    <Popover
-                        open={this.props.showFilterPopover}
-                        onClose={() => this.props.onPopoverClose()}
-                        anchorEl={this.state.anchorElement}>
-                        <FilterSelector
-                            roasters={this.props.roasters}
-                            beans={this.props.beans}
-                            onFilterChange={filter => this.props.onFilterChange(filter)} />
-                    </Popover>
-                </Tooltip>
-            </Toolbar>
-        );
-    }
-
-    handleFilterIconClick(event) {
-        this.setState({
-            anchorEl: event.currentTarget
-        });
-        
-        this.props.onFilterClick();
     }
 }
 
