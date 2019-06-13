@@ -30,7 +30,7 @@ class TableToolbar extends React.Component {
                         id={id}
                         open={this.state.open}
                         onClose={() => this.handleOnPopoverClose()}
-                        anchorEl={this.state.anchorEl || undefined}
+                        anchorEl={this.state.anchorEl}
                         anchorOrigin={{
                             vertical: 'bottom',
                             horizontal: 'left',
@@ -52,9 +52,13 @@ class TableToolbar extends React.Component {
     }
 
     handleFilterIconClick(event) {
+        event.persist();
         this.setState(state => {
-            return { anchorEl: event.currentTarget,
-                open: !state.open };
+            let toOpen = !state.open;
+            return { 
+                anchorEl: toOpen ? event.currentTarget : null,
+                open: !state.open 
+            };
         });
     }
 

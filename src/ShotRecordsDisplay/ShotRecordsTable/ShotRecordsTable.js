@@ -122,10 +122,10 @@ class ShotRecordsTable extends React.Component {
 
     filterDisplayRecords(filter, shotDisplayRecords) {
         switch (filter.filterType.toLowerCase()) {
-            case Roaster:
+            case Roaster.toLowerCase():
                 return shotDisplayRecords.filter(r => r.roaster === filter.roaster);
 
-            case RoasterBean:
+            case RoasterBean.toLowerCase():
                 return shotDisplayRecords.filter(r => (r.roaster === filter.roaster) && (r.bean === filter.bean));
 
             default:
@@ -136,10 +136,7 @@ class ShotRecordsTable extends React.Component {
     renderTableToolbar() {
         return (
             <TableToolbar
-                onFilterClick={() => this.setState({ showFilterPopover: true })}
-                showFilterPopover={this.state.showFilterPopover}
-                handleFilterChange={filter => this.setState({ filter: filter })}
-                onPopoverClose={() => this.setState({ showFilterPopover: false })}
+                onFilterChange={filter => this.setState({ filter: filter })}
                 roasters={this.props.roasters}
                 beans={this.props.beans}
             />
