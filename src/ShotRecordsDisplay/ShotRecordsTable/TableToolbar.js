@@ -23,14 +23,13 @@ class TableToolbar extends React.Component {
                 <Typography variant="h6">
                     Shot history
                 </Typography>
-                <Tooltip title="Filter list">
-                    <IconButton aria-describedby={id} aria-label="Filter list" onClick={event => this.handleFilterIconClick(event)}>
+                    <IconButton aria-label="Filter list" onClick={event => this.handleFilterIconClick(event)}>
                         <FilterListIcon />
                     </IconButton>
                     <Popover
                         id={id}
                         open={this.state.open}
-                        onClose={() => this.props.onPopoverClose()}
+                        onClose={() => this.handleOnPopoverClose()}
                         anchorEl={this.state.anchorEl}
                         anchorOrigin={{
                             vertical: 'bottom',
@@ -39,24 +38,34 @@ class TableToolbar extends React.Component {
                         transformOrigin={{
                             vertical: 'top',
                             horizontal: 'center',
-                        }}>
+                        }}
+                       >
                         <FilterSelector
                             roasters={this.props.roasters}
                             beans={this.props.beans}
-                            onFilterChange={filter => this.props.onFilterChange(filter)} />
+                            onFilterChange={filter => this.props.onFilterChange(filter)}
+                            onClose={() => this.handleFilterSelectorOnClose()}
+                            />
                     </Popover>
-                </Tooltip>
             </Toolbar>
         );
     }
 
     handleFilterIconClick(event) {
-        this.setState((state,props) => {
+        this.setState(state => {
             return { anchorEl: event.currentTarget,
                 open: !state.open };
         });
-        
-        //this.props.onFilterClick();
+    }
+
+    handleFilterSelectorOnClose() {
+        this.handleOnPopoverClose();
+    }
+
+    handleOnPopoverClose() {
+        this.setState({
+            open: false
+        });
     }
 }
 

@@ -62,4 +62,8 @@ let beans = {
     "Starbucks": ["House blend", "Yukon"]
 };
 
-ReactDOM.render(<TableToolbar shots={shots} roasters={roasters} beans={beans} showFilterPopover={true} />, document.getElementById('root'));
+ReactDOM.render(<TableToolbar 
+    shots={shots} 
+    roasters={roasters} 
+    beans={beans} 
+    onFilterChange={() => null} />, document.getElementById('root'));
