@@ -23,7 +23,6 @@ class FilterSelector extends React.Component {
     }
 
     render() {
-
         return (
             <table>
                 <tbody>
@@ -57,6 +56,49 @@ class FilterSelector extends React.Component {
         );
     }
 
+    getUniqueRoastersAndBeans() {
+        let uniqueRoasters = this.getUniqueRoasters();
+        let uniqueRoasterBeans = {};
+        uniqueRoasters.forEach(roaster => {
+            uniqueRoasterBeans[roaster] = new Set();
+        });
+
+        this.props.shots.forEach(shot => {
+            let matchingRoasterSet = uniqueRoasterBeans[shot.roaster];
+
+            if (!matchingRoasterSet.has(shot.bean)) {
+                matchingRoasterSet.add(shot.bean);
+            }
+        });
+
+        return {
+            uniqueRoasters: uniqueRoasters,
+            uniqueRoasterBeans: uniqueRoasterBeans
+        };
+    }
+
+    getUniqueRoasters() {
+        return this.getUniqueItems(this.props.shots, x => x.roaster);
+    }
+
+    getUniqueItems(collection, delegate) {
+        let uniqueItems = new Set();
+        collection.forEach(record => {
+            let item = undefined;
+            if (delegate) {
+                item = delegate(record);
+            } else {
+                item = record;
+            }
+
+            if (!uniqueItems.has(item)) {
+                uniqueItems.add(item);
+            }
+        });
+
+        return uniqueItems;
+    }
+
     handleFilterTypeChange(val) {
         this.setState({
             filterType: val,
@@ -66,24 +108,30 @@ class FilterSelector extends React.Component {
     }
 
     renderFilterValueSelectors() {
+        let uniqueRoastersAndBeans = this.getUniqueRoastersAndBeans();
+
         return (
             <div>
             {this.shouldRenderRoasterSelector() ? (
                 <DropDown
                     name="Roaster"
                     value={this.state.roaster}
-                    items={this.props.roasters}
+                    items={this.convertSetToArray(uniqueRoastersAndBeans.uniqueRoasters)}
                     onChange={x => this.setState({ roaster: x })} />
             ) : null}
             {this.shouldRenderBeanSelector() ? (
                 <DropDown
                     name="Bean"
                     value={this.state.bean}
-                    items={this.props.beans[this.state.roaster]}
+                    items={this.convertSetToArray(uniqueRoastersAndBeans.uniqueRoasterBeans[this.state.roaster])}
                     onChange={x => this.setState({ bean: x })} />
             ) : null}
             </div>
         )
+    }
+
+    convertSetToArray(set) {
+        return Array.from(set);
     }
 
     shouldRenderRoasterSelector() {

@@ -139,6 +139,7 @@ class ShotRecordsTable extends React.Component {
                 onFilterChange={filter => this.setState({ filter: filter })}
                 roasters={this.props.roasters}
                 beans={this.props.beans}
+                shots={this.props.shots}
             />
         )
     }

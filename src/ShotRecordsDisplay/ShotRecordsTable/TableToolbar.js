@@ -43,6 +43,7 @@ class TableToolbar extends React.Component {
                         <FilterSelector
                             roasters={this.props.roasters}
                             beans={this.props.beans}
+                            shots={this.props.shots}
                             onFilterChange={filter => this.props.onFilterChange(filter)}
                             onClose={() => this.handleFilterSelectorOnClose()}
                             />
