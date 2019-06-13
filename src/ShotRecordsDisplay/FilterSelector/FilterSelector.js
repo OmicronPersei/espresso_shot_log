@@ -165,6 +165,7 @@ class FilterSelector extends React.Component {
 
     handleOnClickApply() {
         this.raiseOnFilterChange();
+        this.props.onClose();
     }
 
     handleOnClickClear() {
@@ -172,9 +173,10 @@ class FilterSelector extends React.Component {
             filterType: "",
             roaster: "",
             bean: ""
+        }, () => {
+            this.raiseOnFilterChange();
+            this.props.onClose();
         });
-
-        this.raiseOnFilterChange();
     }
 
     raiseOnFilterChange() {

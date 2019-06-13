@@ -41,16 +41,19 @@ class ShotRecordsTable extends React.Component {
         this.state = {
             sortOrder: null,
             sortedColId: null,
-            showFilterPopover: false
+            showFilterPopover: false,
+            filter: {
+                roaster: "",
+                bean: "",
+                filterType: ""
+            }
         };
     }
 
     render() {
         let shotDisplayRecords = this.mapToShotDisplayRecords(this.props.shots);
 
-        if (this.state.filter) {
-            shotDisplayRecords = this.filterDisplayRecords(this.state.filter, shotDisplayRecords);
-        }
+        shotDisplayRecords = this.filterDisplayRecords(this.state.filter, shotDisplayRecords);
 
         shotDisplayRecords = this.sortDisplayRecords(shotDisplayRecords);
 
@@ -121,6 +124,11 @@ class ShotRecordsTable extends React.Component {
     }
 
     filterDisplayRecords(filter, shotDisplayRecords) {
+
+        if (!filter.filterType) {
+            return shotDisplayRecords;
+        }
+
         switch (filter.filterType.toLowerCase()) {
             case Roaster.toLowerCase():
                 return shotDisplayRecords.filter(r => r.roaster === filter.roaster);
