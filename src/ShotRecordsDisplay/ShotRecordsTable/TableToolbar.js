@@ -58,7 +58,7 @@ class TableToolbar extends React.Component {
         this.setState(state => {
             let toOpen = !state.open;
             return { 
-                anchorEl: toOpen ? event.currentTarget : null,
+                anchorEl: toOpen ? event.target : null,
                 open: !state.open 
             };
         });
