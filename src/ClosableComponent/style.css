@@ -1,0 +1,15 @@
+table {
+    width: 100%;
+}
+
+td {
+    vertical-align: top;
+}
+
+tr.header>td {
+    vertical-align: middle;
+}
+
+td.title {
+    padding-left: 1em;
+}

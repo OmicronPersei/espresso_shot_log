@@ -1,9 +1,8 @@
 import React from 'react';
-import { Grid, Typography, Button } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { Button, FormHelperText } from '@material-ui/core';
 import DropDown from '../../DropDown/DropDown';
 import './style.css';
+import ClosableComponent from '../../ClosableComponent/ClosableComponent';
 
 class FilterSelector extends React.Component {
 
@@ -24,35 +23,28 @@ class FilterSelector extends React.Component {
 
     render() {
         return (
-            <table>
-                <tbody>
-                    <tr className="header">
-                        <td className="left">
-                            <Typography variant="body1">
-                            Filter type    
-                            </Typography>
-                        </td>
-                        <td>
-                            <IconButton onClick={() => this.props.onClose()} className="close-button">
-                                <CloseIcon />
-                            </IconButton>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className="left">
-                            <DropDown
-                                name="Type"
-                                value={this.state.filterType}
-                                items={this.filterTypes}
-                                onChange={x => this.handleFilterTypeChange(x)} />
-                        </td>
-                        <td className="right">
-                            {this.renderFilterValueSelectors()}
-                            {this.renderButtons()}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <ClosableComponent
+                onClose={() => this.props.onClose()}
+                title="Filter"
+            >
+                <table className="filter-table">
+                    <tbody>
+                        <tr>
+                            <td className="left">
+                                <DropDown
+                                    name="Type"
+                                    value={this.state.filterType}
+                                    items={this.filterTypes}
+                                    onChange={x => this.handleFilterTypeChange(x)} />
+                            </td>
+                            <td className="right">
+                                {this.renderFilterValueSelectors()}
+                                {this.renderButtons()}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </ClosableComponent>
         );
     }
 
@@ -169,14 +161,18 @@ class FilterSelector extends React.Component {
     }
 
     handleOnClickClear() {
-        this.setState({
-            filterType: "",
-            roaster: "",
-            bean: ""
-        }, () => {
-            this.raiseOnFilterChange();
-            this.props.onClose();
-        });
+        this.props.onClose();
+        
+        new Promise(() => {
+            this.setState({
+                filterType: "",
+                roaster: "",
+                bean: ""
+            }, () => {
+                this.raiseOnFilterChange();
+            });
+        })
+        
     }
 
     raiseOnFilterChange() {

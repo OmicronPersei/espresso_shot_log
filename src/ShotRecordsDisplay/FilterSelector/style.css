@@ -3,38 +3,41 @@
 }
 
 .buttons {
-    /* float: right; */
     display: flex;
     flex-direction: row-reverse;
 }
 
-td,.buttons>.action-button {
+.buttons>.action-button {
     padding: 0.5em;
+    padding-bottom: 0;
 }
 
 .buttons>:first-child {
     padding-right: 0;
 }
-table {
+
+table.filter-table {
     width: 100%;
 }
 
-td {
+table.filter-table>td {
     vertical-align: top;
 }
 
-tr.header>td {
+table.filter-table>tr.header>td {
     vertical-align: middle;
 }
 
-/* .action-button {
-    padding-right: 0;
-} */
+table.filter-table,table.filter-table td {
+    padding: 0.5em;
+}
 
-td.left {
+table.filter-table td.left {
+    min-width: 4em;
     width: 30%;
 }
 
-td.right {
+table.filter-table td.right {
+    min-width: 4em;
     width: 70%;
 }

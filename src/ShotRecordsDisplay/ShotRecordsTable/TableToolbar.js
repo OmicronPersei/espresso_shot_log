@@ -20,7 +20,7 @@ class TableToolbar extends React.Component {
 
         return (
             <Toolbar>
-                <Typography variant="h6">
+                <Typography variant="h5">
                     Shot history
                 </Typography>
                     <IconButton aria-label="Filter list" onClick={event => this.handleFilterIconClick(event)}>

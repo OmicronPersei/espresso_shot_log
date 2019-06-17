@@ -12,22 +12,7 @@ import './styles.css';
 class NewShotLogEntryForm extends React.Component {
     constructor(props) {
         super(props);
-
-        this.roasters = [
-            "Counter culture",
-            "Starbucks"
-        ];
-
-        this.beans = {
-            "Counter culture": ["Apollo", "Hologram"],
-            "Starbucks": ["House blend", "Yukon"]
-        };
-
-        this.issues = [
-            "Spritzers",
-            "Extraction too fast"
-        ];
-
+        
         let bitter_sour_vals = [];
         for (let i = 5; i >= -5; --i) {
             if (i > 0) {
@@ -56,15 +41,13 @@ class NewShotLogEntryForm extends React.Component {
     }
 
     render() {
-        
-        
         return (
             <div>
                 <Grid container spacing={2} justify="center" alignContent="center" alignItems="center">
                     <Grid item sm={6} xs={12} md={6}>
                         <div className="form-item left">
                             <DropDownWithAddButton 
-                                items={this.roasters} 
+                                items={this.props.roasters} 
                                 name="Roaster" 
                                 onChange={val => this.handleValueChange("roaster", val)}
                                 onNewItemAdded={(newItem) => this.handleNewRoasterAdded(newItem)}
@@ -127,7 +110,7 @@ class NewShotLogEntryForm extends React.Component {
                         <div className="form-item right">
                             <DropDownWithAddButton
                                 name="Issues?"
-                                items={this.issues}
+                                items={this.props.issues}
                                 value={this.state.form.issues}
                                 onChange={val => this.handleValueChange("issues", val)}
                                 onNewItemAdded={val => this.handleNewIssueAdded(val)} />
@@ -168,8 +151,7 @@ class NewShotLogEntryForm extends React.Component {
     }
 
     handleNewRoasterAdded(newVal) {
-        this.roasters.push(newVal);
-        this.beans[newVal] = [];
+        this.props.onNewRoasterAdded(newVal);
 
         this.handleValueChange("roaster", newVal);
     }
@@ -178,11 +160,7 @@ class NewShotLogEntryForm extends React.Component {
         let roaster = this.state.form.roaster;
         
         if (roaster) {
-            let beansForRoaster = this.beans[roaster];
-            if (!beansForRoaster) {
-                beansForRoaster = [];
-                this.beans[roaster] = beansForRoaster;
-            }
+            let beansForRoaster = this.props.beans[roaster];
             
             return (
                 <div className="form-item right">
@@ -203,12 +181,11 @@ class NewShotLogEntryForm extends React.Component {
     }
 
     handleNewBeanTypeAdded(bean) {
-        let beansForRoaster = this.beans[this.state.form.roaster];
-        beansForRoaster.push(bean);
+        this.props.onNewBeanAddedForRoaster(this.state.form.roaster, bean);
     }
 
     handleNewIssueAdded(issue) {
-        this.issues.push(issue);
+        this.props.onNewIssueAdded(issue);
     }
 
     handleValueChange(val_name, value) {
@@ -222,12 +199,11 @@ class NewShotLogEntryForm extends React.Component {
     handleOnAddShotRecord() {
         let shotRecord = {
             ...this.state.form,
-            timestamp: new Date()
+            timestamp: new Date(),
+            id: Symbol()
         };
 
-        if (this.props.onAddShotRecord) {
-            this.props.onAddShotRecord(shotRecord);
-        }
+        this.props.onAddShotRecord(shotRecord);
     }
 
 }
