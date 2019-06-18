@@ -64,16 +64,19 @@ let issues = [
 
 http.createServer((req, res) => {
     var url = require('url');
-    let q = url.parse(request.url);
+    let q = url.parse(req.url);
 
-    let key = `${reqeust.method.toLowerCase()} ${q.path}`;
+    let reqHandlerKey = `${req.method.toLowerCase()} ${q.path}`;
 
-    let handler = handlers[key];
-    if (!handler) {
-        console.log(`Could not find a matching handler for the following method / path pair '${key}'`);
+    let reqHandler = requestHandlers[reqHandlerKey];
+    if (!reqHandler) {
+        console.log(`Could not find a matching handler for the following method / path pair '${reqHandlerKey}'`);
+    } else {
+        console.log(`Processing request ${reqHandlerKey}`);
+        
+        reqHandler(req, res);
     }
-
-    handler(req, res);
+    
 }).listen(serverConfig.listenport);
 
 respondWithJSON = function(res, obj) {
@@ -83,7 +86,7 @@ respondWithJSON = function(res, obj) {
     res.end(asJSON);
 }
 
-const handlers = {
+const requestHandlers = {
     "get /shots": (req, res) => {
         respondWithJSON(res, shots);
     },
