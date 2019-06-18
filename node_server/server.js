@@ -67,9 +67,9 @@ const http_no_contents = 204;
 const http_not_found = 404;
 
 http.createServer((req, res) => {
-    let method = req.method.toLowerCase();
+    let method = req.method.toUpperCase();
 
-    if (method === "options") {
+    if (method === "OPTIONS") {
         processOptionsRequest(req, res);
     } else {
         processRequest(req, res);
@@ -82,10 +82,17 @@ const processOptionsRequest = function(req, res) {
 
     console.log(`received options request for ${path}`);
 
-    let options = getOptionsForPath(path);
-
-    if (options) {
-        res.writeHead(http_no_contents, { "Allow": JSON.stringify(options) });
+    let allowedMethods = getAllowedMethodsForPath(path);
+    let requestedMethod = req.headers["access-control-request-method"];
+    let origin = req.headers["origin"];
+    if (allowedMethods && allowedMethods.indexOf(requestedMethod) > -1) {
+        res.writeHead(http_no_contents, 
+            { 
+                "Access-Control-Request-Method": requestedMethod,
+                "Access-Control-Request-Headers": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Origin": origin
+            });
         res.end();
     } else {
         res.writeHead(http_not_found);
@@ -93,7 +100,7 @@ const processOptionsRequest = function(req, res) {
     }
 }
 
-const getOptionsForPath = function(path) {
+const getAllowedMethodsForPath = function(path) {
     let matchingObj = requestHandlers[path];
     if (!matchingObj) {
         console.log(`Could not find any matching paths for ${path}`);
@@ -110,7 +117,7 @@ getPath = function(req) {
 
 processRequest = function(req, res) {
     let path = getPath(req);
-    let method = req.method.toLowerCase();
+    let method = req.method.toUpperCase();
 
     console.log(`processing method ${method} path ${path}`);
 
@@ -134,27 +141,27 @@ respondWithJSON = function(res, obj) {
 
 const requestHandlers = {
     "/shots": {
-        get: (req, res) => {
+        GET: (req, res) => {
             respondWithJSON(res, shots);
         }
     },
     "/beans": {
-        get: (req, res) => {
+        GET: (req, res) => {
             respondWithJSON(res, shots);
         }
     },
     "/roasters": {
-        get: (req, res) => {
+        GET: (req, res) => {
             respondWithJSON(res, shots);
         }
     },
     "/issues": {
-        get: (req, res) => {
+        GET: (req, res) => {
             respondWithJSON(res, shots);
         }
     },
     "/all": {
-        get: (req, res) => {
+        GET: (req, res) => {
             let all = {
                 shots: shots,
                 roasters: roasters,
