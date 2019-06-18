@@ -62,51 +62,109 @@ let issues = [
     "Extraction too fast"
 ];
 
+const http_ok = 200;
+const http_no_contents = 204;
+const http_not_found = 404;
+
 http.createServer((req, res) => {
+    let method = req.method.toLowerCase();
+
+    if (method === "options") {
+        processOptionsRequest(req, res);
+    } else {
+        processRequest(req, res);
+    }
+
+}).listen(serverConfig.listenport);
+
+const processOptionsRequest = function(req, res) {
+    let path = getPath(req);
+
+    console.log(`received options request for ${path}`);
+
+    let options = getOptionsForPath(path);
+
+    if (options) {
+        res.writeHead(http_no_contents, { "Allow": JSON.stringify(options) });
+        res.end();
+    } else {
+        res.writeHead(http_not_found);
+        res.end();
+    }
+}
+
+const getOptionsForPath = function(path) {
+    let matchingObj = requestHandlers[path];
+    if (!matchingObj) {
+        console.log(`Could not find any matching paths for ${path}`);
+    } else {
+        return Object.getOwnPropertyNames(matchingObj);
+    }
+}
+
+getPath = function(req) {
     var url = require('url');
     let q = url.parse(req.url);
+    return q.path;
+}
 
-    let reqHandlerKey = `${req.method.toLowerCase()} ${q.path}`;
+processRequest = function(req, res) {
+    let path = getPath(req);
+    let method = req.method.toLowerCase();
 
-    let reqHandler = requestHandlers[reqHandlerKey];
-    if (!reqHandler) {
-        console.log(`Could not find a matching handler for the following method / path pair '${reqHandlerKey}'`);
-    } else {
-        console.log(`Processing request ${reqHandlerKey}`);
-        
+    console.log(`processing method ${method} path ${path}`);
+
+    try {
+        let reqHandler = requestHandlers[path][method];
+        console.log(`found matching handler for method ${method} path ${path}`);
         reqHandler(req, res);
+    } catch (error) {
+        console.error(`Could not find a matching handler for the path ${path} and the verb ${method}`);
+        res.writeHead(http_not_found);
+        res.end();
     }
-    
-}).listen(serverConfig.listenport);
+}
 
 respondWithJSON = function(res, obj) {
     let asJSON = JSON.stringify(obj);
 
-    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.writeHead(http_ok, {'Content-Type': 'application/json'});
     res.end(asJSON);
 }
 
 const requestHandlers = {
-    "get /shots": (req, res) => {
-        respondWithJSON(res, shots);
+    "/shots": {
+        get: (req, res) => {
+            respondWithJSON(res, shots);
+        }
     },
-    "get /beans": (req, res) => {
-        respondWithJSON(res, beans);
+    "/beans": {
+        get: (req, res) => {
+            respondWithJSON(res, shots);
+        }
     },
-    "get /roasters": (req, res) => {
-        respondWithJSON(res, roasters);
+    "/roasters": {
+        get: (req, res) => {
+            respondWithJSON(res, shots);
+        }
     },
-    "get /issues": (req, res) => {
-        respondWithJSON(res, issues);
+    "/issues": {
+        get: (req, res) => {
+            respondWithJSON(res, shots);
+        }
     },
-    "get /all": (req, res) => {
-        let all = {
-            shots: shots,
-            roasters: roasters,
-            beans: beans,
-            issues: issues
-        };
+    "/all": {
+        get: (req, res) => {
+            let all = {
+                shots: shots,
+                roasters: roasters,
+                beans: beans,
+                issues: issues
+            };
 
-        respondWithJSON(res, all);
+            respondWithJSON(res, all);
+        }
     }
 };
+
+
