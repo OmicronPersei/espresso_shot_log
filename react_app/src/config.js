@@ -1,8 +1,8 @@
 var config = function(env) {
     let config = {};
 
-    config.listenport = 8080;
-    
+    config.apiurl = "http://localhost:8080";
+
     return config;
 }
 

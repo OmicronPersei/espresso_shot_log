@@ -8,19 +8,43 @@ import ShotRecordsTable from '../ShotRecordsDisplay/ShotRecordsTable/ShotRecords
 import NewShotModal from './NewShotModal/NewShotModal';
 import IDProvider from './IDProvider';
 import './style.css';
+import config from '../config';
+import { resetWarningCache } from 'prop-types';
 
 class MainDisplay extends React.Component {
 
     constructor(props) {
         super(props);
 
+        this._config = config();
+
         this.state = {
-            shots: shots,
-            roasters: roasters,
-            beans: beans,
-            issues: issues,
+            shots: [],
+            roasters: [],
+            beans: {},
+            issues: [],
             newShotLogEntryFormModalOpen: false
         };
+
+        this.getAllData();
+    }
+
+    getAllData() {
+        let endpoint = `${this._config.apiurl}/all`;
+        let headers = new Headers();
+        headers.set("Content-type", "application-json");
+        fetch(endpoint, { headers: headers })
+            .then(res => res.json())
+            .then(res => {
+                this.setState({
+                    shots: res.shots,
+                    roasters: res.roasters,
+                    beans: res.beans,
+                    issues: res.issues
+                });
+            }, error => {
+                console.log("could not get all data. error: " + error);
+            });
     }
 
     render() {

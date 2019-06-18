@@ -1,7 +1,7 @@
 const http = require('http');
 
 const config = require('../config.js');
-const serverConfig = config().server;
+const serverConfig = config();
 
 //mock data for testing
 let shots = [
@@ -98,5 +98,15 @@ const requestHandlers = {
     },
     "get /issues": (req, res) => {
         respondWithJSON(res, issues);
+    },
+    "get /all": (req, res) => {
+        let all = {
+            shots: shots,
+            roasters: roasters,
+            beans: beans,
+            issues: issues
+        };
+
+        respondWithJSON(res, all);
     }
 };
