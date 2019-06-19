@@ -92,11 +92,8 @@ const processOptionsRequest = function(req, res) {
     if (allowedMethods && allowedMethods.indexOf(requestedMethod) > -1) {
         res.writeHead(http_no_contents, 
             { 
-                "Access-Control-Request-Method": requestedMethod,
-                "Access-Control-Request-Headers": "application/json",
                 "Access-Control-Allow-Headers": "Content-Type",
                 "Access-Control-Allow-Origin": "http://localhost:3000",
-                "Origin": origin
             });
         res.end();
     } else {
@@ -108,7 +105,7 @@ const processOptionsRequest = function(req, res) {
 const getAllowedMethodsForPath = function(path) {
     let matchingObj = requestHandlers[path];
     if (!matchingObj) {
-        console.log(`Could not find any matching paths for ${path}`);
+        console.error(`Could not find any matching paths for ${path}`);
     } else {
         return Object.getOwnPropertyNames(matchingObj);
     }
@@ -157,7 +154,7 @@ const requestHandlers = {
                 shots.push(newShotRecord);
                 addCORSHeader(res);
                 res.writeHead(http_ok);
-                
+
                 res.write(newId.toString());
                 
                 res.end();
