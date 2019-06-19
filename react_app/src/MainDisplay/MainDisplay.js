@@ -10,6 +10,7 @@ import IDProvider from './IDProvider';
 import './style.css';
 import config from '../config';
 import { resetWarningCache } from 'prop-types';
+import { request } from 'http';
 
 class MainDisplay extends React.Component {
 
@@ -132,15 +133,38 @@ class MainDisplay extends React.Component {
     }
 
     handleAddNewShotRecord(shot) {
-        this.setState(prevState => {
-            let shots = prevState.shots.slice();
-            this._idProvider.appendID(shot);
-            shots.push(shot);
+        let url = `${this._config.apiurl}/shots/add`;
+        let headers = new Headers();
+        let body = JSON.stringify(shot);
+        let requestInit = {
+            headers: headers,
+            method: "POST",
+            body: body
+        };
 
-            return {
-                shots: shots
-            };
-        });
+        fetch(url, requestInit).then(
+            (res) => {
+                res.json()
+                    .then(body => {
+                        console.log(`successfully saved shot ${body}`);
+                        let shotId = body;
+                        let newShotRecord = {
+                            ...shot,
+                            id: shotId
+                        };
+                        this.setState(prevState => {
+                            let shots = prevState.shots.slice();
+                            shots.push(newShotRecord);
+                
+                            return {
+                                shots: shots
+                            };
+                        });
+                    });
+            },
+            error => {
+                console.log("could not save the shot: " + error);
+            });
     }
 }
 

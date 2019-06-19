@@ -13,7 +13,8 @@ let shots = [
         brew_amount_grams: 24,
         brew_time_seconds: 35,
         bitter_sour: "+2 (bitter)",
-        issues: ""
+        issues: "",
+        id: 1
     },
     {
         roaster: "Counter culture",
@@ -23,7 +24,8 @@ let shots = [
         brew_amount_grams: 24,
         brew_time_seconds: 36,
         bitter_sour: "+33 (bitter)",
-        issues: ""
+        issues: "",
+        id: 2
     },
     {
         roaster: "Counter culture",
@@ -33,7 +35,8 @@ let shots = [
         brew_amount_grams: 24,
         brew_time_seconds: 37,
         bitter_sour: "+1 (bitter)",
-        issues: ""
+        issues: "",
+        id: 3
     },
     {
         roaster: "Counter culture",
@@ -43,7 +46,8 @@ let shots = [
         brew_amount_grams: 24,
         brew_time_seconds: 37,
         bitter_sour: "0",
-        issues: ""
+        issues: "",
+        id: 4
     }
 ];
 
@@ -133,21 +137,31 @@ processRequest = function(req, res) {
     }
 }
 
-respondWithJSON = function(res, obj) {
-    let asJSON = JSON.stringify(obj);
 
-    res.writeHead(http_ok, 
-        {
-            'Content-Type': 'application/json',
-            "Access-Control-Allow-Origin": "http://localhost:3000"
-        });
-    res.end(asJSON);
-}
 
 const requestHandlers = {
     "/shots": {
         GET: (req, res) => {
             respondWithJSON(res, shots);
+        }
+    },
+    "/shots/add": {
+        POST: (req, res) => {
+            let newId = shots.length + 1;
+            getBodyFromRequest(req, body => {
+                let obj = JSON.parse(body);
+                let newShotRecord = {
+                    ...obj,
+                    id: newId
+                };
+                shots.push(newShotRecord);
+                addCORSHeader(res);
+                res.writeHead(http_ok);
+                
+                res.write(newId.toString());
+                
+                res.end();
+            });
         }
     },
     "/beans": {
@@ -178,5 +192,27 @@ const requestHandlers = {
         }
     }
 };
+
+const getBodyFromRequest = function(req, onFinishedCallback) {
+    let body = [];
+    req.on('data', chunk => {
+        body.push(chunk);
+    }).on('end', () => {
+        let bodyStr = Buffer.concat(body).toString();
+        onFinishedCallback(bodyStr);
+    });
+}
+
+respondWithJSON = function(res, obj) {
+    let asJSON = JSON.stringify(obj);
+
+    addCORSHeader(res);
+    res.writeHead(http_ok, { 'Content-Type': 'application/json' });
+    res.end(asJSON);
+}
+
+addCORSHeader = function(res) {
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+}
 
 
