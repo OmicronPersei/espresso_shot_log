@@ -163,7 +163,7 @@ class MainDisplay extends React.Component {
 
             this.setState(prevState => {
                 let issues = prevState.issues.slice();
-                issues.push(issues);
+                issues.push(issue);
     
                 return {
                     issues: issues
