@@ -125,25 +125,52 @@ class MainDisplay extends React.Component {
     }
 
     handleNewBeanAddedForRoaster(roaster, bean) {
-        this.setState(prevState => {
-            let beans = {...prevState.beans};
+        let url = `${this._config.apiurl}/beans/add`;
+        let headers = new Headers();
+        let body = JSON.stringify({ roaster: roaster, bean: bean });
+        let requestInit = {
+            headers: headers,
+            method: "POST",
+            body: body
+        };
 
-            beans[roaster].push(bean);
-
-            return {
-                beans: beans
-            };
+        fetch(url, requestInit).then(res => {
+            console.log(`successfully added the bean ${bean} for roaster ${roaster}`);
+            this.setState(prevState => {
+                let beans = {...prevState.beans};
+    
+                beans[roaster].push(bean);
+    
+                return {
+                    beans: beans
+                };
+            });
         });
     }
 
     handleNewIssueAdded(issue) {
-        this.setState(prevState => {
-            let issues = prevState.issues.slice();
-            issues.push(issue);
+        let url = `${this._config.apiurl}/issues/add`;
+        let headers = new Headers();
+        let body = issue
+        let requestInit = {
+            headers: headers,
+            method: "POST",
+            body: body
+        };
 
-            return {
-                issues: issues
-            };
+        fetch(url, requestInit).then(res => {
+            console.log("successfully saved new issue " + issue);
+
+            this.setState(prevState => {
+                let issues = prevState.issues.slice();
+                issues.push(issues);
+    
+                return {
+                    issues: issues
+                };
+            });
+        }, error => {
+            console.error("could not save issue: " + error);
         });
     }
 

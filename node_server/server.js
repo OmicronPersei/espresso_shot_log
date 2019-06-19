@@ -164,12 +164,8 @@ const requestHandlers = {
                     id: newId
                 };
                 shots.push(newShotRecord);
-                addCORSHeader(res);
-                res.writeHead(http_status_ok);
 
-                res.write(newId.toString());
-                
-                res.end();
+                returnOk(res, newId.toString());
             });
         }
     },
@@ -187,8 +183,7 @@ const requestHandlers = {
 
                 beans[roaster].push(bean);
 
-                res.writeHead(http_status_ok);
-                res.end();
+                returnOk(res);
             });
         }
     },
@@ -204,15 +199,23 @@ const requestHandlers = {
                 roasters.push(roaster);
                 beans[roaster] = [];
 
-                addCORSHeader(res);
-                res.writeHead(http_status_ok);
-                res.end();
+                returnOk(res);
             });
         }
     },
     "/issues": {
         GET: (req, res) => {
             respondWithJSON(res, shots);
+        }
+    },
+    "/issues/add": {
+        POST: (req, res) => {
+            getBodyFromRequest(req, body => {
+                let issue = body;
+                issues.push(issue);
+
+                returnOk(res);
+            });
         }
     },
     "/all": {
@@ -242,10 +245,19 @@ const getBodyFromRequest = function(req, bodyReadCallback) {
 respondWithJSON = function(res, obj) {
     let asJSON = JSON.stringify(obj);
 
-    addCORSHeader(res);
     addJSONContentTypeHeader(res);
+    returnOk(res, asJSON);
+}
+
+returnOk = function(res, bodyJSON = null) {
+    addCORSHeader(res);
     res.writeHead(http_status_ok);
-    res.end(asJSON);
+    
+    if (bodyJSON) {
+        res.end(bodyJSON);
+    } else {
+        res.end();
+    }
 }
 
 addCORSHeader = function(res) {
@@ -255,3 +267,5 @@ addCORSHeader = function(res) {
 addJSONContentTypeHeader = function(res) {
     res.setHeader("Content-Type", "application/json");
 }
+
+
