@@ -4,6 +4,7 @@ const config = require('../config.js');
 const serverConfig = config();
 
 //mock data for testing
+//probably eventually replace with some kind of light weight SQL DB.
 let shots = [
     {
         roaster: "Counter culture",
@@ -84,22 +85,20 @@ http.createServer((req, res) => {
 const processOptionsRequest = function(req, res) {
     let path = getPath(req);
 
-    console.log(`received options request for ${path}`);
-
-    let allowedMethods = getAllowedMethodsForPath(path);
+    console.log(`received options request ${path}`);
+    
     let requestedMethod = req.headers["access-control-request-method"];
-    let origin = req.headers["origin"];
-    if (allowedMethods && allowedMethods.indexOf(requestedMethod) > -1) {
-        res.writeHead(http_no_contents, 
-            { 
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Origin": "http://localhost:3000",
-            });
-        res.end();
+
+    if (methodIsSupported(requestedMethod, path)) {
+        sendMethodIsSupportedResponse(res);
     } else {
-        res.writeHead(http_not_found);
-        res.end();
+        sendMethodIsNotSupportedResponse(res);
     }
+}
+
+const methodIsSupported = function(requestedMethod, path) {
+    let allowedMethods = getAllowedMethodsForPath(path);
+    return (allowedMethods && allowedMethods.indexOf(requestedMethod) > -1);
 }
 
 const getAllowedMethodsForPath = function(path) {
@@ -117,6 +116,18 @@ getPath = function(req) {
     return q.path;
 }
 
+sendMethodIsSupportedResponse = function(res) {
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    addCORSHeader(res);
+    res.writeHead(http_no_contents);
+    res.end();
+}
+
+sendMethodIsNotSupportedResponse = function(res) {
+    res.writeHead(http_not_found);
+    res.end();
+}
+
 processRequest = function(req, res) {
     let path = getPath(req);
     let method = req.method.toUpperCase();
@@ -125,7 +136,6 @@ processRequest = function(req, res) {
 
     try {
         let reqHandler = requestHandlers[path][method];
-        console.log(`found matching handler for method ${method} path ${path}`);
         reqHandler(req, res);
     } catch (error) {
         console.error(`Could not find a matching handler for the path ${path} and the verb ${method}`);
@@ -133,8 +143,6 @@ processRequest = function(req, res) {
         res.end();
     }
 }
-
-
 
 const requestHandlers = {
     "/shots": {
@@ -204,7 +212,8 @@ respondWithJSON = function(res, obj) {
     let asJSON = JSON.stringify(obj);
 
     addCORSHeader(res);
-    res.writeHead(http_ok, { 'Content-Type': 'application/json' });
+    addJSONContentTypeHeader(res);
+    res.writeHead(http_ok);
     res.end(asJSON);
 }
 
@@ -212,4 +221,6 @@ addCORSHeader = function(res) {
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
 }
 
-
+addJSONContentTypeHeader = function(res) {
+    res.setHeader("Content-Type", "application/json");
+}
