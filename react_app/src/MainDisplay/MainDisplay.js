@@ -34,14 +34,14 @@ class MainDisplay extends React.Component {
         let headers = new Headers();
         headers.set("Content-type", "application-json");
         fetch(endpoint, { headers: headers, method: "GET" })
-            .then(res => res.json())
             .then(res => {
+                let obj = res.json();
                 console.log("received response to all");
                 this.setState({
-                    shots: res.shots,
-                    roasters: res.roasters,
-                    beans: res.beans,
-                    issues: res.issues
+                    shots: obj.shots,
+                    roasters: obj.roasters,
+                    beans: obj.beans,
+                    issues: obj.issues
                 });
             }, error => {
                 console.log("could not get all data. error: " + error);

@@ -136,7 +136,11 @@ processRequest = function(req, res) {
 respondWithJSON = function(res, obj) {
     let asJSON = JSON.stringify(obj);
 
-    res.writeHead(http_ok, {'Content-Type': 'application/json'});
+    res.writeHead(http_ok, 
+        {
+            'Content-Type': 'application/json',
+            "Access-Control-Allow-Origin": "*"
+        });
     res.end(asJSON);
 }
 
