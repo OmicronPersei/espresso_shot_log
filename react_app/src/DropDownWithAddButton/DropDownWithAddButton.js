@@ -22,6 +22,7 @@ import DropDown from '../DropDown/DropDown';
 
 function renderMenuItemsWithAddbutton(props) {
     let items = props.items;
+
     let menuItems = [];
     
     let nullMenuItem = (
@@ -32,7 +33,7 @@ function renderMenuItemsWithAddbutton(props) {
 
     menuItems.push(nullMenuItem);
 
-    let defaultMenuItems = items.map(item =>
+    let defaultMenuItems = items && items.map(item =>
         (
             <MenuItem value={item} key={item}>
                 {item}

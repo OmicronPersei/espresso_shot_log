@@ -178,9 +178,36 @@ const requestHandlers = {
             respondWithJSON(res, shots);
         }
     },
+    "/beans/add": {
+        POST: (req, res) => {
+            getBodyFromRequest(req, body => {
+                bodyJSON = JSON.parse(body);
+                let roaster = bodyJSON.roaster;
+                let bean = bodyJSON.bean;
+
+                beans[roaster].push(bean);
+
+                res.writeHead(http_status_ok);
+                res.end();
+            });
+        }
+    },
     "/roasters": {
         GET: (req, res) => {
             respondWithJSON(res, shots);
+        }
+    },
+    "/roasters/add": {
+        POST: (req, res) => {
+            getBodyFromRequest(req, body => {
+                let roaster = body;
+                roasters.push(roaster);
+                beans[roaster] = [];
+
+                addCORSHeader(res);
+                res.writeHead(http_status_ok);
+                res.end();
+            });
         }
     },
     "/issues": {

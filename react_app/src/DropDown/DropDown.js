@@ -16,7 +16,7 @@ function DropDown(props) {
 
     menuItems.push(nullMenuItem);
 
-    let defaultMenuItems = items.map(item =>
+    let defaultMenuItems = items && items.map(item =>
         (
             <MenuItem value={item} key={item}>
                 {item}

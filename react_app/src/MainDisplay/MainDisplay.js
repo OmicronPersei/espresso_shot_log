@@ -96,16 +96,31 @@ class MainDisplay extends React.Component {
     }
 
     handleNewRoasterAdded(roaster) {
-        this.setState(prevState => {
-            let roasters = prevState.roasters.slice();
-            roasters.push(roaster);
-            let beans = prevState.beans;
-            beans[roaster] = [];
+        let url = `${this._config.apiurl}/roasters/add`;
+        let headers = new Headers();
+        let body = roaster
+        let requestInit = {
+            headers: headers,
+            method: "POST",
+            body: body
+        };
 
-            return {
-                roasters: roasters,
-                beans: beans
-            };
+        fetch(url, requestInit).then(res => {
+            console.log("successfully saved new roaster " + roaster);
+
+            this.setState(prevState => {
+                let roasters = prevState.roasters.slice();
+                roasters.push(roaster);
+                let beans = {...prevState.beans};
+                beans[roaster] = [];
+    
+                return {
+                    roasters: roasters,
+                    beans: beans
+                };
+            });
+        }, error => {
+            console.error("could not save roaster: " + error);
         });
     }
 
