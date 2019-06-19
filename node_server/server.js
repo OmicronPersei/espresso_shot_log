@@ -91,7 +91,7 @@ const processOptionsRequest = function(req, res) {
                 "Access-Control-Request-Method": requestedMethod,
                 "Access-Control-Request-Headers": "application/json",
                 "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Origin": "http://localhost:3000",
                 "Origin": origin
             });
         res.end();
@@ -139,7 +139,7 @@ respondWithJSON = function(res, obj) {
     res.writeHead(http_ok, 
         {
             'Content-Type': 'application/json',
-            "Access-Control-Allow-Origin": "*"
+            "Access-Control-Allow-Origin": "http://localhost:3000"
         });
     res.end(asJSON);
 }
