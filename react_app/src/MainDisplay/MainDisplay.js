@@ -35,16 +35,19 @@ class MainDisplay extends React.Component {
         headers.set("Content-type", "application-json");
         fetch(endpoint, { headers: headers, method: "GET" })
             .then(res => {
-                let obj = res.json();
-                console.log("received response to all");
-                this.setState({
-                    shots: obj.shots,
-                    roasters: obj.roasters,
-                    beans: obj.beans,
-                    issues: obj.issues
-                });
+                res.json()
+                    .then(obj => {
+                        this.setState({
+                            shots: obj.shots,
+                            roasters: obj.roasters,
+                            beans: obj.beans,
+                            issues: obj.issues
+                        });
+                    }, error => {
+                        console.error("could not deserialize response: " + error);
+                    });
             }, error => {
-                console.log("could not get all data. error: " + error);
+                console.error("could not get all data. error: " + error);
             });
     }
 
