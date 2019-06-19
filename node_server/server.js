@@ -64,7 +64,8 @@ let beans = {
 
 let issues = [
     "Spritzers",
-    "Extraction too fast"
+    "Extraction too fast",
+    "Extraction too slow"
 ];
 
 const http_status_ok = 200;
@@ -110,29 +111,29 @@ const getAllowedMethodsForPath = function(path) {
     }
 }
 
-getPath = function(req) {
+const getPath = function(req) {
     var url = require('url');
     let q = url.parse(req.url);
     return q.path;
 }
 
-sendMethodIsSupportedResponse = function(res) {
+const sendMethodIsSupportedResponse = function(res) {
     addAllowableHeadersHeader(res);
     addCORSHeader(res);
     res.writeHead(http_status_no_contents);
     res.end();
 }
 
-addAllowableHeadersHeader = function(res) {
+const addAllowableHeadersHeader = function(res) {
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
-sendMethodIsNotSupportedResponse = function(res) {
+const sendMethodIsNotSupportedResponse = function(res) {
     res.writeHead(http_status_not_found);
     res.end();
 }
 
-processRequest = function(req, res) {
+const processRequest = function(req, res) {
     let path = getPath(req);
     let method = req.method.toUpperCase();
 
@@ -242,14 +243,14 @@ const getBodyFromRequest = function(req, bodyReadCallback) {
     });
 }
 
-respondWithJSON = function(res, obj) {
+const respondWithJSON = function(res, obj) {
     let asJSON = JSON.stringify(obj);
 
     addJSONContentTypeHeader(res);
     returnOk(res, asJSON);
 }
 
-returnOk = function(res, bodyJSON = null) {
+const returnOk = function(res, bodyJSON = null) {
     addCORSHeader(res);
     res.writeHead(http_status_ok);
     
@@ -260,11 +261,11 @@ returnOk = function(res, bodyJSON = null) {
     }
 }
 
-addCORSHeader = function(res) {
+const addCORSHeader = function(res) {
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
 }
 
-addJSONContentTypeHeader = function(res) {
+const addJSONContentTypeHeader = function(res) {
     res.setHeader("Content-Type", "application/json");
 }
 
