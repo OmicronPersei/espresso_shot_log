@@ -90,6 +90,7 @@ const processOptionsRequest = function(req, res) {
             { 
                 "Access-Control-Request-Method": requestedMethod,
                 "Access-Control-Request-Headers": "application/json",
+                "Access-Control-Allow-Headers": "Content-Type",
                 "Access-Control-Allow-Origin": "*",
                 "Origin": origin
             });
