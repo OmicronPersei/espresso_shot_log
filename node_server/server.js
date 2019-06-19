@@ -67,9 +67,9 @@ let issues = [
     "Extraction too fast"
 ];
 
-const http_ok = 200;
-const http_no_contents = 204;
-const http_not_found = 404;
+const http_status_ok = 200;
+const http_status_no_contents = 204;
+const http_status_not_found = 404;
 
 http.createServer((req, res) => {
     let method = req.method.toUpperCase();
@@ -117,14 +117,18 @@ getPath = function(req) {
 }
 
 sendMethodIsSupportedResponse = function(res) {
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    addAllowableHeadersHeader(res);
     addCORSHeader(res);
-    res.writeHead(http_no_contents);
+    res.writeHead(http_status_no_contents);
     res.end();
 }
 
+addAllowableHeadersHeader = function(res) {
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+}
+
 sendMethodIsNotSupportedResponse = function(res) {
-    res.writeHead(http_not_found);
+    res.writeHead(http_status_not_found);
     res.end();
 }
 
@@ -139,7 +143,7 @@ processRequest = function(req, res) {
         reqHandler(req, res);
     } catch (error) {
         console.error(`Could not find a matching handler for the path ${path} and the verb ${method}`);
-        res.writeHead(http_not_found);
+        res.writeHead(http_status_not_found);
         res.end();
     }
 }
@@ -161,7 +165,7 @@ const requestHandlers = {
                 };
                 shots.push(newShotRecord);
                 addCORSHeader(res);
-                res.writeHead(http_ok);
+                res.writeHead(http_status_ok);
 
                 res.write(newId.toString());
                 
@@ -198,13 +202,13 @@ const requestHandlers = {
     }
 };
 
-const getBodyFromRequest = function(req, onFinishedCallback) {
+const getBodyFromRequest = function(req, bodyReadCallback) {
     let body = [];
     req.on('data', chunk => {
         body.push(chunk);
     }).on('end', () => {
         let bodyStr = Buffer.concat(body).toString();
-        onFinishedCallback(bodyStr);
+        bodyReadCallback(bodyStr);
     });
 }
 
@@ -213,7 +217,7 @@ respondWithJSON = function(res, obj) {
 
     addCORSHeader(res);
     addJSONContentTypeHeader(res);
-    res.writeHead(http_ok);
+    res.writeHead(http_status_ok);
     res.end(asJSON);
 }
 
