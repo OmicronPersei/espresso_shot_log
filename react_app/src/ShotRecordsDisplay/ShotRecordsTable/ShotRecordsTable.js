@@ -123,10 +123,10 @@ class ShotRecordsTable extends React.Component {
 
         switch (filter.filterType.toLowerCase()) {
             case Roaster.toLowerCase():
-                return shotDisplayRecords.filter(r => r.roaster === filter.roaster);
+                return shotDisplayRecords.filter(r => r.roaster.value === filter.roaster);
 
             case RoasterBean.toLowerCase():
-                return shotDisplayRecords.filter(r => (r.roaster === filter.roaster) && (r.bean === filter.bean));
+                return shotDisplayRecords.filter(r => (r.roaster.value === filter.roaster) && (r.bean.value === filter.bean));
 
             default:
                 throw new Error("Unknown filter type");
