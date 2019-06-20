@@ -268,5 +268,3 @@ const addCORSHeader = function(res) {
 const addJSONContentTypeHeader = function(res) {
     res.setHeader("Content-Type", "application/json");
 }
-
-

@@ -2,15 +2,11 @@ import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import Modal from '@material-ui/core/Modal';
 
 import ShotRecordsTable from '../ShotRecordsDisplay/ShotRecordsTable/ShotRecordsTable';
 import NewShotModal from './NewShotModal/NewShotModal';
-import IDProvider from './IDProvider';
 import './style.css';
 import config from '../config';
-import { resetWarningCache } from 'prop-types';
-import { request } from 'http';
 
 class MainDisplay extends React.Component {
 
@@ -209,6 +205,5 @@ class MainDisplay extends React.Component {
             });
     }
 }
-
 
 export default MainDisplay;
