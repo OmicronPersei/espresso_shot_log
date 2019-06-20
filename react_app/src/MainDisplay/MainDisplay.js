@@ -33,6 +33,8 @@ class MainDisplay extends React.Component {
             .then(res => {
                 res.json()
                     .then(obj => {
+                        obj.shots.forEach(shot => shot.timestamp = new Date(shot.timestamp));
+                        
                         this.setState({
                             shots: obj.shots,
                             roasters: obj.roasters,

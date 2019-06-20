@@ -14,7 +14,10 @@ class ShotRecordsTable extends React.Component {
     constructor(props) {
         super(props);
 
+        //The `id` property for each column is the display record object property that it reffers to.
+        //(See the method `mapToShotDisplayRecords` for column value mapping).
         this.cols = [
+            { label: "Date/time", id: "timestamp", sortAsNumber: true },
             { label: "Roaster", id: "roaster", sortAsNumber: false },
             { label: "Bean", id: "bean", sortAsNumber: false },
             { label: "Dose", id: "dose_amount", sortAsNumber: true },
@@ -24,17 +27,7 @@ class ShotRecordsTable extends React.Component {
             { 
                 label: "Bitterness/sourness", 
                 id: "bitter_sour", 
-                sortAsNumber: false,
-                compare: (a,b,asc) => {
-                    //Okay to strip negative sign, we want absolute value.
-                    let aVal = a.replace(/\D/g, "");
-                    let bVal = b.replace(/\D/g, "");
-                    if (asc) {
-                        return aVal - bVal;
-                    } else {
-                        return bVal - aVal;
-                    }
-                }
+                sortAsNumber: true
             },
         ];
         
@@ -68,14 +61,15 @@ class ShotRecordsTable extends React.Component {
     mapToShotDisplayRecords(shotRecords) {
         return shotRecords.map(x => {
             return {
-                roaster: x.roaster,
-                bean: x.bean,
-                dose_amount: x.dose_amount_grams,
-                brew_amount: x.brew_amount_grams,
-                brew_ratio: this.roundToThreeDecimalPlaces(x.brew_amount_grams / x.dose_amount_grams),
-                brew_time_seconds: x.brew_time_seconds,
-                bitter_sour: x.bitter_sour,
-                id: x.id
+                roaster: { value: x.roaster, label: x.roaster },
+                bean: { value: x.bean, label: x.bean },
+                dose_amount: { value: x.dose_amount_grams, label: x.dose_amount_grams },
+                brew_amount: { value: x.brew_amount_grams, label: x.brew_amount_grams },
+                brew_ratio: { value: (x.brew_amount_grams/x.dose_amount_grams), label: this.roundToThreeDecimalPlaces(x.brew_amount_grams / x.dose_amount_grams) },
+                brew_time_seconds: { value: x.brew_time_seconds, label: x.brew_time_seconds },
+                bitter_sour: { value: x.bitter_sour.replace(/\D/g, ""), label: x.bitter_sour },
+                id: x.id,
+                timestamp: { value: x.timestamp, label: `${x.timestamp.toLocaleDateString()} ${x.timestamp.toLocaleTimeString()}` }
             };
         });
     }
@@ -85,7 +79,7 @@ class ShotRecordsTable extends React.Component {
             return shotDisplayRecords;
         }
 
-        let getValForSorting = val => val[this.state.sortedColId];
+        let getValForSorting = val => val[this.state.sortedColId].value;
         let matchingCol = this.cols.find(col => col.id === this.state.sortedColId);
 
         return shotDisplayRecords.sort((a,b) => {
@@ -99,8 +93,6 @@ class ShotRecordsTable extends React.Component {
                 } else {
                     return bVal - aVal;
                 }
-            } else if (matchingCol.compare) {
-                return matchingCol.compare(aVal, bVal, isAsc);
             } else {
                 if (isAsc) {
                     if (aVal.toUpperCase() > bVal.toUpperCase()) {
@@ -131,10 +123,10 @@ class ShotRecordsTable extends React.Component {
 
         switch (filter.filterType.toLowerCase()) {
             case Roaster.toLowerCase():
-                return shotDisplayRecords.filter(r => r.roaster === filter.roaster);
+                return shotDisplayRecords.filter(r => r.roaster.value === filter.roaster);
 
             case RoasterBean.toLowerCase():
-                return shotDisplayRecords.filter(r => (r.roaster === filter.roaster) && (r.bean === filter.bean));
+                return shotDisplayRecords.filter(r => (r.roaster.value === filter.roaster) && (r.bean.value === filter.bean));
 
             default:
                 throw new Error("Unknown filter type");
@@ -232,7 +224,7 @@ function RenderCells(shotDisplayRecords, cols) {
     return shotDisplayRecords.map(shotRecord => (
         <TableRow key={shotRecord.id}>
             {cols.map(col => (
-                <TableCell key={col.id}>{shotRecord[col.id]}</TableCell>
+                <TableCell key={col.id}>{shotRecord[col.id].label}</TableCell>
             ))}
         </TableRow>
     ));

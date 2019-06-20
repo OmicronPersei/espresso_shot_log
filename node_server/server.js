@@ -15,7 +15,8 @@ let shots = [
         brew_time_seconds: 35,
         bitter_sour: "+2 (bitter)",
         issues: "",
-        id: 1
+        id: 1,
+        timestamp: new Date("2019-06-19 11:30")
     },
     {
         roaster: "Counter culture",
@@ -26,7 +27,8 @@ let shots = [
         brew_time_seconds: 36,
         bitter_sour: "+33 (bitter)",
         issues: "",
-        id: 2
+        id: 2,
+        timestamp: new Date("2019-06-19 11:32")
     },
     {
         roaster: "Counter culture",
@@ -37,7 +39,8 @@ let shots = [
         brew_time_seconds: 37,
         bitter_sour: "+1 (bitter)",
         issues: "",
-        id: 3
+        id: 3,
+        timestamp: new Date("2019-06-19 11:34")
     },
     {
         roaster: "Counter culture",
@@ -48,7 +51,8 @@ let shots = [
         brew_time_seconds: 37,
         bitter_sour: "0",
         issues: "",
-        id: 4
+        id: 4,
+        timestamp: new Date("2019-06-19 11:36")
     }
 ];
 
