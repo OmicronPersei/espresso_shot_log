@@ -76,13 +76,14 @@ function renderNewEntryWithConfirmButton(props) {
                             onChange={(event) => props.onTextChange(event.target.value)}
                             label={"New " + props.name.toLowerCase()}
                             className="selector"
-                            fullWidth={true}></TextField>
+                            fullWidth={true}
+                            disabled={props.disabled}></TextField>
                     </td>
                     <td className="drop-down-button">
-                        <IconButton onClick={props.onAddConfirmed} size="small" className="action-button"><DoneIcon /></IconButton>
+                        <IconButton onClick={props.onAddConfirmed} size="small" className="action-button" disabled={props.disabled}><DoneIcon /></IconButton>
                     </td>
                     <td className="drop-down-button">
-                        <IconButton onClick={props.onCancelClicked} size="small" className="action-button"><DeleteIcon /></IconButton>
+                        <IconButton onClick={props.onCancelClicked} size="small" className="action-button" disabled={props.disabled}><DeleteIcon /></IconButton>
                     </td>
                 </tr>
             </tbody>
@@ -147,24 +148,32 @@ class DropDownWithAddButton extends React.Component {
             onTextChange: (newVal) => this.handleAddNewItemTextChange(newVal),
             onAddConfirmed: () => this.handleAddNewItem(),
             onCancelClicked: () => this.handleCancelAddingNewItem(),
-            value: this.state.value
+            value: this.state.value,
+            disabled: this.props.disabled
         });
     }
 
     handleAddNewItemTextChange(newVal) {
-        //let addingNewItemValid = !this.state.items.includes(newVal);
-
         this.setState({
             value: newVal
         });
     }
 
     handleAddNewItem() {
+       this.raiseOnNewItemAddedCallback(this.state.value);
+    }
+
+    componentDidUpdate(prevProps) {
+        let noLongerSavingValue = !this.props.disabled && prevProps.disabled;
+        if (noLongerSavingValue) {
+            this.finishedAddingItem();
+        }
+    }
+
+    finishedAddingItem() {
         this.setState({
             addingNewItem: false
         });
-
-        this.raiseOnNewItemAddedCallback(this.state.value);
     }
 
     handleCancelAddingNewItem() {

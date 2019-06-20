@@ -20,12 +20,16 @@ class MainDisplay extends React.Component {
             roasters: [],
             beans: {},
             issues: [],
-            newShotLogEntryFormModalOpen: false
+            newShotLogEntryFormModalOpen: false,
+            awaitingAPICallback: {
+                savingNewShot: false,
+                savingNewRoaster: false,
+                savingNewBean: false,
+                savingNewIssue: false
+            }
         };
 
         this.getAllData();
-
-        
     }
 
     getAllData() {
@@ -73,8 +77,9 @@ class MainDisplay extends React.Component {
                     issues={this.state.issues}
                     onNewRoasterAdded={roaster => this.handleNewRoasterAdded(roaster)}
                     onNewBeanAddedForRoaster={(roaster, bean) => this.handleNewBeanAddedForRoaster(roaster, bean)}
-                    onNewIssueAdded={issue => this.handleNewIssueAdded(issue)}
-                    onAddShotRecord={shot => this.handleAddNewShotRecord(shot)}
+                    onNewIssueAdded={(issue) => this.handleNewIssueAdded(issue)}
+                    onAddShotRecord={(shot) => this.handleAddNewShotRecord(shot)}
+                    awaitingAPICallback={this.state.awaitingAPICallback}
                 />
             </div>
         );
@@ -93,62 +98,73 @@ class MainDisplay extends React.Component {
     }
 
     handleNewRoasterAdded(roaster) {
-        this._api.addNewRoaster(roaster).then(res => {
-            console.log("successfully saved new roaster " + roaster);
-
-            this.setState(prevState => {
-                let roasters = prevState.roasters.slice();
-                roasters.push(roaster);
-                let beans = {...prevState.beans};
-                beans[roaster] = [];
+        this.setWaitingOnAPIFlag("savingNewRoaster", true, () => {
+            this._api.addNewRoaster(roaster).then(res => {
+                console.log("successfully saved new roaster " + roaster);
     
-                return {
-                    roasters: roasters,
-                    beans: beans
-                };
+                this.setState(prevState => {
+                    let roasters = prevState.roasters.slice();
+                    roasters.push(roaster);
+                    let beans = {...prevState.beans};
+                    beans[roaster] = [];
+        
+                    return {
+                        roasters: roasters,
+                        beans: beans
+                    };
+                });
+            }, error => {
+                console.error("could not save roaster: " + error);
+            })
+            .then(() => {
+                this.setWaitingOnAPIFlag("savingNewRoaster", false);
             });
-        }, error => {
-            console.error("could not save roaster: " + error);
         });
     }
 
     handleNewBeanAddedForRoaster(roaster, bean) {
-        this._api.addNewBeanForRoaster(roaster, bean).then(res => {
-            console.log(`successfully added the bean ${bean} for roaster ${roaster}`);
-            this.setState(prevState => {
-                let beans = {...prevState.beans};
-    
-                beans[roaster].push(bean);
-    
-                return {
-                    beans: beans
-                };
-            });
+        this.setWaitingOnAPIFlag("savingNewBean", true, () => {
+            this._api.addNewBeanForRoaster(roaster, bean).then(res => {
+                console.log(`successfully added the bean ${bean} for roaster ${roaster}`);
+                this.setState(prevState => {
+                    let beans = {...prevState.beans};
+        
+                    beans[roaster].push(bean);
+        
+                    return {
+                        beans: beans
+                    };
+                });
+            })
+            .then(() => this.setWaitingOnAPIFlag("savingNewBean", false));
         });
     }
 
     handleNewIssueAdded(issue) {
-        this._api.addNewIssue(issue).then(() => {
-            console.log("successfully saved new issue " + issue);
-
-            this.setState(prevState => {
-                let issues = prevState.issues.slice();
-                issues.push(issue);
+        this.setWaitingOnAPIFlag("savingNewIssue", true, () => {
+            this._api.addNewIssue(issue).then(() => {
+                console.log("successfully saved new issue " + issue);
     
-                return {
-                    issues: issues
-                };
-            });
-        }, error => {
-            console.error("could not save issue: " + error);
+                this.setState(prevState => {
+                    let issues = prevState.issues.slice();
+                    issues.push(issue);
+        
+                    return {
+                        issues: issues
+                    };
+                });
+            }, error => {
+                console.error("could not save issue: " + error);
+            })
+            .then(() => this.setWaitingOnAPIFlag("savingNewIssue", false));
         });
     }
 
     handleAddNewShotRecord(shot) {
-        this._api.addNewShotRecord(shot).then(
-            (res) => {
-                res.json()
-                    .then(body => {
+        this.setWaitingOnAPIFlag("savingNewShot", true, () => {
+            this._api.addNewShotRecord(shot).then(
+                (res) => {
+                    res.json().then(body => {
                         console.log(`successfully saved shot ${body}`);
                         let shotId = body;
                         let newShotRecord = {
@@ -164,10 +180,27 @@ class MainDisplay extends React.Component {
                             };
                         });
                     });
-            },
-            error => {
-                console.log("could not save the shot: " + error);
-            });
+                },
+                error => {
+                    console.log("could not save the shot: " + error);
+                })
+                .then(() => this.setWaitingOnAPIFlag("savingNewShot", false));
+        });
+    }
+
+    setWaitingOnAPIFlag(field, value, callback) {
+        this.setState(prevState => {
+            let awaitingAPICallback = {...prevState.awaitingAPICallback};
+            awaitingAPICallback[field] = value;
+
+            return {
+                awaitingAPICallback: awaitingAPICallback
+            };
+        }, () => {
+            if (callback) {
+                callback();
+            }
+        });
     }
 }
 

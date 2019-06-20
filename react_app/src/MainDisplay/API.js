@@ -5,7 +5,7 @@ class API {
         this._config = config();
     }
 
-    getAllData() {
+    async getAllData() {
         let endpoint = `${this._config.apiurl}/all`;
         let headers = new Headers();
         headers.set("Content-type", "application-json");
@@ -13,10 +13,11 @@ class API {
             headers: headers,
             method: "GET"
         };
+
         return fetch(endpoint, requestInit);
     }
 
-    addNewRoaster(newRoaster) {
+    async addNewRoaster(newRoaster) {
         let url = `${this._config.apiurl}/roasters/add`;
         let headers = new Headers();
         let body = newRoaster
@@ -29,7 +30,7 @@ class API {
         return fetch(url, requestInit);
     }
 
-    addNewBeanForRoaster(roaster, bean) {
+    async addNewBeanForRoaster(roaster, bean) {
         let url = `${this._config.apiurl}/beans/add`;
         let headers = new Headers();
         let body = JSON.stringify({ roaster: roaster, bean: bean });
@@ -42,7 +43,7 @@ class API {
         return fetch(url, requestInit);
     }
 
-    addNewIssue(issue) {
+    async addNewIssue(issue) {
         let url = `${this._config.apiurl}/issues/add`;
         let headers = new Headers();
         let body = issue
@@ -55,7 +56,11 @@ class API {
         return fetch(url, requestInit);
     }
 
-    addNewShotRecord(shot) {
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async addNewShotRecord(shot) {
         let url = `${this._config.apiurl}/shots/add`;
         let headers = new Headers();
         let body = JSON.stringify(shot);
@@ -64,7 +69,7 @@ class API {
             method: "POST",
             body: body
         };
-
+        
         return fetch(url, requestInit);
     }
 }
