@@ -72,7 +72,7 @@ const http_status_ok = 200;
 const http_status_no_contents = 204;
 const http_status_not_found = 404;
 
-http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
     let method = req.method.toUpperCase();
 
     if (method === "OPTIONS") {
@@ -81,7 +81,10 @@ http.createServer((req, res) => {
         processRequest(req, res);
     }
 
-}).listen(serverConfig.listenport);
+}).listen(serverConfig.listenport, listeningListener = () => {
+    let address = server.address();
+    console.log(`Server is listening at ${address.address}:${address.port}`);
+});
 
 const processOptionsRequest = function(req, res) {
     let path = getPath(req);

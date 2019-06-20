@@ -6,14 +6,14 @@ import AddIcon from '@material-ui/icons/Add';
 import ShotRecordsTable from '../ShotRecordsDisplay/ShotRecordsTable/ShotRecordsTable';
 import NewShotModal from './NewShotModal/NewShotModal';
 import './style.css';
-import config from '../config';
+import API from './API';
 
 class MainDisplay extends React.Component {
 
     constructor(props) {
         super(props);
 
-        this._config = config();
+        this._api = new API();
 
         this.state = {
             shots: [],
@@ -24,13 +24,12 @@ class MainDisplay extends React.Component {
         };
 
         this.getAllData();
+
+        
     }
 
     getAllData() {
-        let endpoint = `${this._config.apiurl}/all`;
-        let headers = new Headers();
-        headers.set("Content-type", "application-json");
-        fetch(endpoint, { headers: headers, method: "GET" })
+        this._api.getAllData()
             .then(res => {
                 res.json()
                     .then(obj => {
@@ -92,16 +91,7 @@ class MainDisplay extends React.Component {
     }
 
     handleNewRoasterAdded(roaster) {
-        let url = `${this._config.apiurl}/roasters/add`;
-        let headers = new Headers();
-        let body = roaster
-        let requestInit = {
-            headers: headers,
-            method: "POST",
-            body: body
-        };
-
-        fetch(url, requestInit).then(res => {
+        this._api.addNewRoaster(roaster).then(res => {
             console.log("successfully saved new roaster " + roaster);
 
             this.setState(prevState => {
@@ -121,16 +111,7 @@ class MainDisplay extends React.Component {
     }
 
     handleNewBeanAddedForRoaster(roaster, bean) {
-        let url = `${this._config.apiurl}/beans/add`;
-        let headers = new Headers();
-        let body = JSON.stringify({ roaster: roaster, bean: bean });
-        let requestInit = {
-            headers: headers,
-            method: "POST",
-            body: body
-        };
-
-        fetch(url, requestInit).then(res => {
+        this._api.addNewBeanForRoaster(roaster, bean).then(res => {
             console.log(`successfully added the bean ${bean} for roaster ${roaster}`);
             this.setState(prevState => {
                 let beans = {...prevState.beans};
@@ -145,16 +126,7 @@ class MainDisplay extends React.Component {
     }
 
     handleNewIssueAdded(issue) {
-        let url = `${this._config.apiurl}/issues/add`;
-        let headers = new Headers();
-        let body = issue
-        let requestInit = {
-            headers: headers,
-            method: "POST",
-            body: body
-        };
-
-        fetch(url, requestInit).then(res => {
+        this._api.addNewIssue(issue).then(() => {
             console.log("successfully saved new issue " + issue);
 
             this.setState(prevState => {
@@ -171,16 +143,7 @@ class MainDisplay extends React.Component {
     }
 
     handleAddNewShotRecord(shot) {
-        let url = `${this._config.apiurl}/shots/add`;
-        let headers = new Headers();
-        let body = JSON.stringify(shot);
-        let requestInit = {
-            headers: headers,
-            method: "POST",
-            body: body
-        };
-
-        fetch(url, requestInit).then(
+        this._api.addNewShotRecord(shot).then(
             (res) => {
                 res.json()
                     .then(body => {
