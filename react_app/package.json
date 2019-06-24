@@ -30,6 +30,7 @@
     ]
   },
   "devDependencies": {
+    "customize-cra": "^0.2.14",
     "react-app-rewired": "^2.1.3"
   }
 }

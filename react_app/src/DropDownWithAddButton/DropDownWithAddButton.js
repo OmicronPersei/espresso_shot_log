@@ -7,18 +7,24 @@ import AddIcon from '@material-ui/icons/Add';
 import './style.css';
 import { IconButton } from '@material-ui/core';
 
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+
 import DropDown from '../DropDown/DropDown';
 
 //Using the below style is affected by the known [issue](https://github.com/facebook/react/issues/13991)
 
-// const buttonUseStyles = makeStyles(theme => ({
-//     button: {
-//       margin: theme.spacing(1),
-//     },
-//     input: {
-//       display: 'none',
-//     },
-//   }));
+//attempting to use this solution: https://github.com/facebook/react/issues/13991#issuecomment-496383268
+const buttonUseStyles = makeStyles(theme => ({
+    button: {
+      margin: theme.spacing(1),
+    },
+    input: {
+      display: 'none',
+    },
+    stuff: {
+        display: 'none'
+    }
+  }));
 
 function renderMenuItemsWithAddbutton(props) {
     let items = props.items;
@@ -107,9 +113,11 @@ class DropDownWithAddButton extends React.Component {
 
     render() {
         let addingNewItem = this.state.addingNewItem;
+
+        let styles = buttonUseStyles();
         
         return (
-            <div>
+            <div className={styles.stuff}>
                 {addingNewItem ? 
                     this.renderAddingNewItem() 
                     : this.renderMenuItemsSelect()}
