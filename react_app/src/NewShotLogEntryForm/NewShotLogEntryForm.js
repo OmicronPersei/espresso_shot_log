@@ -50,8 +50,9 @@ class NewShotLogEntryForm extends React.Component {
                                 items={this.props.roasters} 
                                 name="Roaster" 
                                 onChange={val => this.handleValueChange("roaster", val)}
-                                onNewItemAdded={(newItem) => this.handleNewRoasterAdded(newItem)}
-                                onStartAddNewItem={() => this.handleOnStartAddingNewRoaster()} />
+                                onNewItemAdded={newItem => this.handleNewRoasterAdded(newItem)}
+                                onStartAddNewItem={() => this.handleOnStartAddingNewRoaster()}
+                                disabled={this.props.awaitingAPICallback.savingNewRoaster} />
                         </div>
                     </Grid>
                     {this.renderBeansGridItem()}
@@ -113,7 +114,8 @@ class NewShotLogEntryForm extends React.Component {
                                 items={this.props.issues}
                                 value={this.state.form.issues}
                                 onChange={val => this.handleValueChange("issues", val)}
-                                onNewItemAdded={val => this.handleNewIssueAdded(val)} />
+                                onNewItemAdded={val => this.handleNewIssueAdded(val)} 
+                                disabled={this.props.awaitingAPICallback.savingNewIssue}/>
                         </div>
                     </Grid>
                 </Grid>
@@ -122,9 +124,7 @@ class NewShotLogEntryForm extends React.Component {
                     </Grid>
                     <Grid item sm={6} xs={12} md={6}>
                         <div className="form-item right">
-                            <Button variant="contained" color="primary" onClick={() => this.handleOnAddShotRecord()} className="add-shot-record-button">
-                                Add Shot Record
-                            </Button>
+                            {this.renderAddShotRecordButton()}
                         </div>
                     </Grid>
                 </Grid>
@@ -168,12 +168,31 @@ class NewShotLogEntryForm extends React.Component {
                         items={beansForRoaster}
                         name="Bean"
                         onChange={bean => this.handleValueChange("bean", bean)}
-                        onNewItemAdded={bean => this.handleNewBeanTypeAdded(bean)} />
+                        onNewItemAdded={bean => this.handleNewBeanTypeAdded(bean)} 
+                        disabled={this.props.awaitingAPICallback.savingNewBean}/>
                 </div>
             );
         }
 
         return;
+    }
+
+    renderAddShotRecordButton() {
+        let savingNewShot = this.props.awaitingAPICallback.savingNewShot;
+        
+        return (
+            <div>
+                <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={() => this.handleOnAddShotRecord()} 
+                    className="add-shot-record-button"
+                    disabled={savingNewShot}
+                >
+                    Add Shot Record
+                </Button>
+            </div>
+        );
     }
 
     handleNewBeanSelected(bean) {

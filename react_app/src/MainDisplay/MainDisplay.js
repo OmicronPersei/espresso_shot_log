@@ -20,12 +20,16 @@ class MainDisplay extends React.Component {
             roasters: [],
             beans: {},
             issues: [],
-            newShotLogEntryFormModalOpen: false
+            newShotLogEntryFormModalOpen: false,
+            awaitingAPICallback: {
+                savingNewShot: false,
+                savingNewRoaster: false,
+                savingNewBean: false,
+                savingNewIssue: false
+            }
         };
 
         this.getAllData();
-
-        
     }
 
     getAllData() {
@@ -73,8 +77,9 @@ class MainDisplay extends React.Component {
                     issues={this.state.issues}
                     onNewRoasterAdded={roaster => this.handleNewRoasterAdded(roaster)}
                     onNewBeanAddedForRoaster={(roaster, bean) => this.handleNewBeanAddedForRoaster(roaster, bean)}
-                    onNewIssueAdded={issue => this.handleNewIssueAdded(issue)}
-                    onAddShotRecord={shot => this.handleAddNewShotRecord(shot)}
+                    onNewIssueAdded={(issue) => this.handleNewIssueAdded(issue)}
+                    onAddShotRecord={(shot) => this.handleAddNewShotRecord(shot)}
+                    awaitingAPICallback={this.state.awaitingAPICallback}
                 />
             </div>
         );
@@ -93,81 +98,116 @@ class MainDisplay extends React.Component {
     }
 
     handleNewRoasterAdded(roaster) {
-        this._api.addNewRoaster(roaster).then(res => {
-            console.log("successfully saved new roaster " + roaster);
-
-            this.setState(prevState => {
-                let roasters = prevState.roasters.slice();
-                roasters.push(roaster);
-                let beans = {...prevState.beans};
-                beans[roaster] = [];
+        this.setWaitingOnAPIFlag("savingNewRoaster", true)
+            .then(() => {
+                return this._api.addNewRoaster(roaster);
+            })
+            .then(() => {
+                console.log("successfully saved new roaster " + roaster);
     
-                return {
-                    roasters: roasters,
-                    beans: beans
-                };
-            });
-        }, error => {
-            console.error("could not save roaster: " + error);
-        });
+                this.setState(prevState => {
+                    let roasters = prevState.roasters.slice();
+                    roasters.push(roaster);
+                    let beans = {...prevState.beans};
+                    beans[roaster] = [];
+        
+                    return {
+                        roasters: roasters,
+                        beans: beans
+                    };
+                });
+            })
+            .catch(error => this.handleAPIError("save new roaster", error))
+            .then(() => this.setWaitingOnAPIFlag("savingNewRoaster", false));
     }
 
     handleNewBeanAddedForRoaster(roaster, bean) {
-        this._api.addNewBeanForRoaster(roaster, bean).then(res => {
-            console.log(`successfully added the bean ${bean} for roaster ${roaster}`);
-            this.setState(prevState => {
-                let beans = {...prevState.beans};
-    
-                beans[roaster].push(bean);
-    
-                return {
-                    beans: beans
-                };
-            });
-        });
+        this.setWaitingOnAPIFlag("savingNewBean", true)
+            .then(() => {
+                return this._api.addNewBeanForRoaster(roaster, bean);
+            })
+            .then(() => {
+                console.log(`successfully added the bean ${bean} for roaster ${roaster}`);
+                this.setState(prevState => {
+                    let beans = {...prevState.beans};
+        
+                    beans[roaster].push(bean);
+        
+                    return {
+                        beans: beans
+                    };
+                });
+            })
+            .catch(error => this.handleAPIError("saving new bean", error))
+            .then(() => this.setWaitingOnAPIFlag("savingNewBean", false));
     }
 
     handleNewIssueAdded(issue) {
-        this._api.addNewIssue(issue).then(() => {
-            console.log("successfully saved new issue " + issue);
-
-            this.setState(prevState => {
-                let issues = prevState.issues.slice();
-                issues.push(issue);
-    
-                return {
-                    issues: issues
-                };
-            });
-        }, error => {
-            console.error("could not save issue: " + error);
-        });
+        this.setWaitingOnAPIFlag("savingNewIssue", true)
+            .then(() => {
+                return this._api.addNewIssue(issue);
+            })
+            .then(() => {
+                console.log("successfully saved new issue " + issue);
+        
+                this.setState(prevState => {
+                    let issues = prevState.issues.slice();
+                    issues.push(issue);
+        
+                    return {
+                        issues: issues
+                    };
+                });
+            })
+            .catch(error => this.handleAPIError("saving new issue", error))
+            .then(() => this.setWaitingOnAPIFlag("savingNewIssue", false));
     }
 
     handleAddNewShotRecord(shot) {
-        this._api.addNewShotRecord(shot).then(
-            (res) => {
-                res.json()
-                    .then(body => {
-                        console.log(`successfully saved shot ${body}`);
-                        let shotId = body;
-                        let newShotRecord = {
-                            ...shot,
-                            id: shotId
-                        };
-                        this.setState(prevState => {
-                            let shots = prevState.shots.slice();
-                            shots.push(newShotRecord);
-                
-                            return {
-                                shots: shots
-                            };
-                        });
-                    });
-            },
-            error => {
-                console.log("could not save the shot: " + error);
+        this.setWaitingOnAPIFlag("savingNewShot", true)
+            .then(() => {
+                return this._api.addNewShotRecord(shot);
+            })
+            .then(res => {
+                return res.json();
+            })
+            .then(res => {
+                console.log(`successfully saved shot ${res}`);
+                let shotId = res;
+                let newShotRecord = {
+                    ...shot,
+                    id: shotId
+                };
+                this.setState(prevState => {
+                    let shots = prevState.shots.slice();
+                    shots.push(newShotRecord);
+        
+                    return {
+                        shots: shots
+                    };
+                });
+            })
+            .catch(error => this.handleAPIError("saving new shot", error))
+            .then(() => this.setWaitingOnAPIFlag("savingNewShot", false));
+    }
+
+    setWaitingOnAPIFlag(field, value) {
+        return new Promise((resolve) => {
+            this.setState(prevState => {
+                let awaitingAPICallback = {...prevState.awaitingAPICallback};
+                awaitingAPICallback[field] = value;
+    
+                return {
+                    awaitingAPICallback: awaitingAPICallback
+                };
+            }, () => {
+                resolve();
             });
+        })
+    }
+
+    handleAPIError(action, error) {
+        console.error(`failed to ${action}: ${error}`);
     }
 }
 

@@ -13,6 +13,7 @@ class API {
             headers: headers,
             method: "GET"
         };
+
         return fetch(endpoint, requestInit);
     }
 
@@ -64,7 +65,7 @@ class API {
             method: "POST",
             body: body
         };
-
+        
         return fetch(url, requestInit);
     }
 }
