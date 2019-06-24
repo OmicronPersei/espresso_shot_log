@@ -1,5 +1,5 @@
 import React from 'react';
-import { Toolbar, Tooltip, IconButton, Typography, Popover } from '@material-ui/core';
+import { Toolbar, IconButton, Typography, Popover } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import FilterSelector from '../FilterSelector/FilterSelector';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, FormHelperText } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import DropDown from '../../DropDown/DropDown';
 import './style.css';
 import ClosableComponent from '../../ClosableComponent/ClosableComponent';
@@ -131,7 +131,7 @@ class FilterSelector extends React.Component {
     }
 
     shouldRenderBeanSelector() {
-        return (this.state.filterType == RoasterBean) && this.state.roaster;
+        return (this.state.filterType === RoasterBean) && this.state.roaster;
     }
 
     renderButtons() {
