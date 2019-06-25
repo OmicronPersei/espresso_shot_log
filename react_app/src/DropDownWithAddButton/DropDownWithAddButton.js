@@ -1,30 +1,17 @@
 import React from 'react';
 import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import DoneIcon from '@material-ui/icons/Done';
-import DeleteIcon from '@material-ui/icons/Delete';
+
 import AddIcon from '@material-ui/icons/Add';
 import './style.css';
 import { IconButton } from '@material-ui/core';
 
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+
 
 import DropDown from '../DropDown/DropDown';
 
-//Using the below style is affected by the known [issue](https://github.com/facebook/react/issues/13991)
+import RenderNewEntryWithConfirmButton from './RenderNewEntryWithConfirmButton';
 
-//attempting to use this solution: https://github.com/facebook/react/issues/13991#issuecomment-496383268
-const buttonUseStyles = makeStyles(theme => ({
-    button: {
-      margin: theme.spacing(1),
-    },
-    input: {
-      display: 'none',
-    },
-    stuff: {
-        display: 'none'
-    }
-  }));
+
 
 function renderMenuItemsWithAddbutton(props) {
     let items = props.items;
@@ -71,31 +58,7 @@ function renderMenuItemsWithAddbutton(props) {
     );
 }
 
-function renderNewEntryWithConfirmButton(props) {
-    return (
-        <table className="drop-down-table">
-            <tbody>
-                <tr>
-                    <td className="drop-down-select">
-                        <TextField 
-                            value={props.value} 
-                            onChange={(event) => props.onTextChange(event.target.value)}
-                            label={"New " + props.name.toLowerCase()}
-                            className="selector"
-                            fullWidth={true}
-                            disabled={props.disabled}></TextField>
-                    </td>
-                    <td className="drop-down-button">
-                        <IconButton onClick={props.onAddConfirmed} size="small" className="action-button" disabled={props.disabled}><DoneIcon /></IconButton>
-                    </td>
-                    <td className="drop-down-button">
-                        <IconButton onClick={props.onCancelClicked} size="small" className="action-button" disabled={props.disabled}><DeleteIcon /></IconButton>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    );
-}
+
 
 class DropDownWithAddButton extends React.Component {
 
@@ -113,11 +76,9 @@ class DropDownWithAddButton extends React.Component {
 
     render() {
         let addingNewItem = this.state.addingNewItem;
-
-        let styles = buttonUseStyles();
         
         return (
-            <div className={styles.stuff}>
+            <div>
                 {addingNewItem ? 
                     this.renderAddingNewItem() 
                     : this.renderMenuItemsSelect()}
@@ -159,7 +120,7 @@ class DropDownWithAddButton extends React.Component {
     }
 
     renderAddingNewItem() {
-        return renderNewEntryWithConfirmButton({
+        return RenderNewEntryWithConfirmButton({
             name: this.props.name,
             onTextChange: (newVal) => this.handleAddNewItemTextChange(newVal),
             onAddConfirmed: () => this.handleAddNewItem(),
@@ -217,3 +178,12 @@ class DropDownWithAddButton extends React.Component {
 }
 
 export default DropDownWithAddButton;
+
+//-----below is test code and should be removed before being merged.-----
+// Add this in node_modules/react-dom/index.js
+window.React1 = require('react');
+
+// Add this in your component file
+require('react-dom');
+window.React2 = require('react');
+console.log(window.React1 === window.React2);
