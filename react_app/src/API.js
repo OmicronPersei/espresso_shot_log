@@ -1,4 +1,4 @@
-import config from '../config';
+import config from './config';
 
 class API {
     constructor() {
@@ -66,6 +66,19 @@ class API {
             body: body
         };
         
+        return fetch(url, requestInit);
+    }
+
+    getShotPage(pageData) {
+        let url = `${this._config.apiurl}/shots`;
+        let headers = new Headers();
+        let body = JSON.stringify(pageData);
+        let requestInit = {
+            headers: headers,
+            method: "GET",
+            body: body
+        };
+
         return fetch(url, requestInit);
     }
 }

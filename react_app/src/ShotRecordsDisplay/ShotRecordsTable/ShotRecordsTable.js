@@ -7,7 +7,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import { Roaster, RoasterBean } from '../FilterSelector/FilterSelector';
+import TablePagination from './TablePagination';
 import TableToolbar from './TableToolbar';
+
+import API from '../../API';
 
 class ShotRecordsTable extends React.Component {
 
@@ -39,12 +42,18 @@ class ShotRecordsTable extends React.Component {
                 roaster: "",
                 bean: "",
                 filterType: ""
-            }
+            },
+            shots: [],
+            page: 0,
+            pageSize: 5,
+            totalItems: 0
         };
+
+        this._api = new API();
     }
 
     render() {
-        let shotDisplayRecords = this.mapToShotDisplayRecords(this.props.shots);
+        let shotDisplayRecords = this.mapToShotDisplayRecords(this.state.shots);
 
         shotDisplayRecords = this.filterDisplayRecords(this.state.filter, shotDisplayRecords);
 
@@ -160,6 +169,13 @@ class ShotRecordsTable extends React.Component {
                 <TableBody>
                     {RenderCells(shotDisplayRecords, this.cols)}
                 </TableBody>
+                <TableFooter>
+                    <TablePagination
+                        goToPage={page => this.handlePageChange(page)}
+                        page={this.state.page}
+                        pageSize={this.state.pageSize}
+                        totalItems={this.state.totalItems} />
+                </TableFooter>
             </Table>
         );
     }
@@ -195,6 +211,20 @@ class ShotRecordsTable extends React.Component {
 
     roundToThreeDecimalPlaces(num) {
         return Math.round(num * 1000) / 1000;
+    }
+
+    handlePageChange(page) {
+        
+    }
+
+    getShotPage(pageNum) {
+        let pageQuery = {
+            page: pageNum,
+            pageSize: this.state.pageSize,
+            // filter: this.state.filter //todo: also implement the filter in the backend
+        };
+
+        return this._api.getShotPage(pageQuery);
     }
 }
 

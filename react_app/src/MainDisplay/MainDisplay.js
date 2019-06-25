@@ -6,7 +6,7 @@ import AddIcon from '@material-ui/icons/Add';
 import ShotRecordsTable from '../ShotRecordsDisplay/ShotRecordsTable/ShotRecordsTable';
 import NewShotModal from './NewShotModal/NewShotModal';
 import './style.css';
-import API from './API';
+import API from '../API';
 
 class MainDisplay extends React.Component {
 
@@ -16,7 +16,6 @@ class MainDisplay extends React.Component {
         this._api = new API();
 
         this.state = {
-            shots: [],
             roasters: [],
             beans: {},
             issues: [],
@@ -40,7 +39,6 @@ class MainDisplay extends React.Component {
                         obj.shots.forEach(shot => shot.timestamp = new Date(shot.timestamp));
                         
                         this.setState({
-                            shots: obj.shots,
                             roasters: obj.roasters,
                             beans: obj.beans,
                             issues: obj.issues
@@ -58,7 +56,6 @@ class MainDisplay extends React.Component {
             <div className="main-display">
                 <Paper>
                     <ShotRecordsTable
-                        shots={this.state.shots}
                         roasters={this.state.roasters}
                         beans={this.state.beans} />
                 </Paper>
