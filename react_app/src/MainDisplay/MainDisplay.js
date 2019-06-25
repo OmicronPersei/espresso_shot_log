@@ -28,10 +28,10 @@ class MainDisplay extends React.Component {
             }
         };
 
-        this.getAllData();
+        this.getMetadata();
     }
 
-    getAllData() {
+    getMetadata() {
         this._api.getAllData()
             .then(res => {
                 res.json()

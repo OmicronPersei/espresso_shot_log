@@ -6,7 +6,7 @@ class API {
     }
 
     getAllData() {
-        let endpoint = `${this._config.apiurl}/all`;
+        let endpoint = `${this._config.apiurl}/metadata`;
         let headers = new Headers();
         headers.set("Content-type", "application-json");
         let requestInit = {

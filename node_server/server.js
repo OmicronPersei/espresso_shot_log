@@ -3,9 +3,13 @@ const http = require('http');
 const config = require('./config.js');
 const serverConfig = config();
 
+
+export const Roaster = "Roaster";
+export const RoasterBean = "Roaster/Bean";
+
 //mock data for testing
 //probably eventually replace with some kind of light weight SQL DB.
-let shots = [
+let mockShotStorage = [
     {
         roaster: "Counter culture",
         bean: "Apollo",
@@ -156,22 +160,113 @@ const processRequest = function(req, res) {
     }
 }
 
+const filterShots = function(filterObj, shots) {
+    switch (filterObj.filterType.toLowerCase()) {
+        case Roaster.toLowerCase():
+            return shots.filter(r => r.roaster.value === filter.roaster);
+
+        case RoasterBean.toLowerCase():
+            return shots.filter(r => (r.roaster.value === filter.roaster) && (r.bean.value === filter.bean));
+
+        default:
+            throw new Error("Unknown filter type");
+    }
+}
+
+const sortShots = function(sortOrder, sortedColId, shots) {
+    const cols = [
+        { id: "timestamp", sortAsNumber: true },
+        { id: "roaster", sortAsNumber: false },
+        { id: "bean", sortAsNumber: false },
+        { id: "dose_amount_grams", sortAsNumber: true },
+        { id: "brew_amount_grams", sortAsNumber: true },
+        { id: "brew_ratio", sortAsNumber: true },
+        { id: "brew_time_seconds", sortAsNumber: true },
+        { id: "bitter_sour", sortAsNumber: true },
+    ];
+
+    const getValForSorting = val => val[sortedColId];
+    let matchingCol = cols.find(col => col.id === sortedColId);
+
+    return shotDisplayRecords.sort((a,b) => {
+        let aVal = getValForSorting(a);
+        let bVal = getValForSorting(b);
+
+        let isAsc = sortOrder === "asc";
+        if (matchingCol.sortAsNumber) {
+            if (isAsc) {
+                return aVal - bVal;
+            } else {
+                return bVal - aVal;
+            }
+        } else {
+            if (isAsc) {
+                if (aVal.toUpperCase() > bVal.toUpperCase()) {
+                    return 1;
+                } else if (aVal.toUpperCase() < bVal.toUpperCase()) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            } else {
+                if (aVal.toUpperCase() < bVal.toUpperCase()) {
+                    return 1;
+                } else if (aVal.toUpperCase() > bVal.toUpperCase()) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        }
+    });
+}
+
 const requestHandlers = {
     "/shots": {
         GET: (req, res) => {
-            respondWithJSON(res, shots);
+            getBodyFromRequest(req, body => {
+                let shots = mockShotStorage;
+
+                //append brew_ratio
+                shots.forEach(shot => shot.brew_ratio = shot.brew_amount_grams / shot.dose_amount_grams);
+                
+                if (body.filter.filterType) {
+                    shots = filterShots(body.filter, shots);
+                }
+
+                let totalItems = shots.length;
+                
+                if (body.sortedColId && body.sortDirection) {
+                    shots = sortShots(body.sortOrder, body.sortedColId, shots);
+                }
+                
+                let skipAmount = body.page * body.pageSize;
+                let takeAmount = body.pageSize;
+                //0 1 2 3 4
+                //skip 2 take 2
+                shots = shots.filter(index => 
+                    index >= skipAmount && 
+                    index < (skipAmount + takeAmount));
+                
+                let returnObj = {
+                    shots: shots,
+                    totalItems: totalItems
+                };
+
+                returnOk(res, returnObj);
+            });
         }
     },
     "/shots/add": {
         POST: (req, res) => {
-            let newId = shots.length + 1;
+            let newId = mockShotStorage.length + 1;
             getBodyFromRequest(req, body => {
                 let obj = JSON.parse(body);
                 let newShotRecord = {
                     ...obj,
                     id: newId
                 };
-                shots.push(newShotRecord);
+                mockShotStorage.push(newShotRecord);
 
                 returnOk(res, newId.toString());
             });
@@ -179,7 +274,7 @@ const requestHandlers = {
     },
     "/beans": {
         GET: (req, res) => {
-            respondWithJSON(res, shots);
+            respondWithJSON(res, mockShotStorage);
         }
     },
     "/beans/add": {
@@ -197,7 +292,7 @@ const requestHandlers = {
     },
     "/roasters": {
         GET: (req, res) => {
-            respondWithJSON(res, shots);
+            respondWithJSON(res, mockShotStorage);
         }
     },
     "/roasters/add": {
@@ -213,7 +308,7 @@ const requestHandlers = {
     },
     "/issues": {
         GET: (req, res) => {
-            respondWithJSON(res, shots);
+            respondWithJSON(res, mockShotStorage);
         }
     },
     "/issues/add": {
@@ -226,10 +321,9 @@ const requestHandlers = {
             });
         }
     },
-    "/all": {
+    "/metadata": {
         GET: (req, res) => {
             let all = {
-                shots: shots,
                 roasters: roasters,
                 beans: beans,
                 issues: issues
@@ -240,6 +334,7 @@ const requestHandlers = {
     }
 };
 
+//todo: refactor this to be a Promise.
 const getBodyFromRequest = function(req, bodyReadCallback) {
     let body = [];
     req.on('data', chunk => {
