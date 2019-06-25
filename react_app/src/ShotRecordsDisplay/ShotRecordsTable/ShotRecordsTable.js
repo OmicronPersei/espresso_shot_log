@@ -30,11 +30,7 @@ class ShotRecordsTable extends React.Component {
             { label: "Brew Amount", id: "brew_amount_grams", sortAsNumber: true },
             { label: "Brew Ratio", id: "brew_ratio", sortAsNumber: true },
             { label: "Brew time", id: "brew_time_seconds", sortAsNumber: true },
-            { 
-                label: "Bitterness/sourness", 
-                id: "bitter_sour", 
-                sortAsNumber: true
-            },
+            { label: "Bitterness/sourness", id: "bitter_sour", sortAsNumber: true },
         ];
         
         this.state = {
@@ -60,12 +56,7 @@ class ShotRecordsTable extends React.Component {
     }
 
     render() {
-        let shotDisplayRecords = this.state.shots;
-
-        //Round brew_ratio column to only 3 decimal places.
-        shotDisplayRecords.forEach(shot => {
-            shot.brew_ratio = this.roundToThreeDecimalPlaces(shot.brew_ratio);
-        });
+        let shotDisplayRecords = this.mapToShotDisplayRecords(this.state.shots);
 
         return (
             <div>
@@ -73,6 +64,22 @@ class ShotRecordsTable extends React.Component {
                 {this.renderTable(shotDisplayRecords)}
             </div>
         );
+    }
+
+    mapToShotDisplayRecords(shotRecords) {
+        return shotRecords.map(x => {
+            return {
+                roaster: { value: x.roaster, label: x.roaster },
+                bean: { value: x.bean, label: x.bean },
+                dose_amount_grams: { value: x.dose_amount_grams, label: x.dose_amount_grams },
+                brew_amount_grams: { value: x.brew_amount_grams, label: x.brew_amount_grams },
+                brew_ratio: { value: x.brew_ratio, label: this.roundToThreeDecimalPlaces(x.brew_ratio) },
+                brew_time_seconds: { value: x.brew_time_seconds, label: x.brew_time_seconds },
+                bitter_sour: { value: x.bitter_sour.replace(/\D/g, ""), label: x.bitter_sour },
+                id: x.id,
+                timestamp: { value: x.timestamp, label: `${x.timestamp.toLocaleDateString()} ${x.timestamp.toLocaleTimeString()}` }
+            };
+        });
     }
 
     // sortDisplayRecords(shotDisplayRecords) {
