@@ -34,17 +34,19 @@ class ShotRecordsTable extends React.Component {
         ];
         
         this.state = {
-            sortOrder: null,
-            sortedColId: null,
-            showFilterPopover: false,
-            filter: {
-                roaster: "",
-                bean: "",
-                filterType: ""
+            shotPageQuery: {
+                sortOrder: null,
+                sortedColId: null,
+                filter: {
+                    roaster: "",
+                    bean: "",
+                    filterType: ""
+                },
+                page: 0,
+                pageSize: 5,
             },
+            showFilterPopover: false,
             shots: [],
-            page: 0,
-            pageSize: 5,
             totalItems: 0
         };
 
@@ -52,7 +54,7 @@ class ShotRecordsTable extends React.Component {
     }
 
     componentDidMount() {
-        this.retrieveShotPage();
+        this.retrieveAndSetShots();
     }
 
     render() {
@@ -82,69 +84,10 @@ class ShotRecordsTable extends React.Component {
         });
     }
 
-    // sortDisplayRecords(shotDisplayRecords) {
-    //     if (!this.state.sortedColId) {
-    //         return shotDisplayRecords;
-    //     }
-
-    //     let getValForSorting = val => val[this.state.sortedColId].value;
-    //     let matchingCol = this.cols.find(col => col.id === this.state.sortedColId);
-
-    //     return shotDisplayRecords.sort((a,b) => {
-    //         let aVal = getValForSorting(a);
-    //         let bVal = getValForSorting(b);
-
-    //         let isAsc = this.state.sortOrder === "asc";
-    //         if (matchingCol.sortAsNumber) {
-    //             if (isAsc) {
-    //                 return aVal - bVal;
-    //             } else {
-    //                 return bVal - aVal;
-    //             }
-    //         } else {
-    //             if (isAsc) {
-    //                 if (aVal.toUpperCase() > bVal.toUpperCase()) {
-    //                     return 1;
-    //                 } else if (aVal.toUpperCase() < bVal.toUpperCase()) {
-    //                     return -1;
-    //                 } else {
-    //                     return 0;
-    //                 }
-    //             } else {
-    //                 if (aVal.toUpperCase() < bVal.toUpperCase()) {
-    //                     return 1;
-    //                 } else if (aVal.toUpperCase() > bVal.toUpperCase()) {
-    //                     return -1;
-    //                 } else {
-    //                     return 0;
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
-
-    // filterDisplayRecords(filter, shotDisplayRecords) {
-
-    //     if (!filter.filterType) {
-    //         return shotDisplayRecords;
-    //     }
-
-    //     switch (filter.filterType.toLowerCase()) {
-    //         case Roaster.toLowerCase():
-    //             return shotDisplayRecords.filter(r => r.roaster.value === filter.roaster);
-
-    //         case RoasterBean.toLowerCase():
-    //             return shotDisplayRecords.filter(r => (r.roaster.value === filter.roaster) && (r.bean.value === filter.bean));
-
-    //         default:
-    //             throw new Error("Unknown filter type");
-    //     }
-    // }
-
     renderTableToolbar() {
         return (
             <TableToolbar
-                currentFilter={this.state.filter}
+                currentFilter={this.state.shotPageQuery.filter}
                 onFilterChange={filter => this.handleFilterChange(filter)}
                 roasters={this.props.roasters}
                 beans={this.props.beans}
@@ -154,10 +97,10 @@ class ShotRecordsTable extends React.Component {
     }
 
     handleFilterChange(filter) {
-        this.setState({
-            filter: filter
-        });
-        this.retrieveShotPage();
+        let shotPageQuery = {...prevState.shotPageQuery};
+        shotPageQuery.filter = filter;
+
+        this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
     }
     
     renderTable(shotDisplayRecords) {
@@ -215,12 +158,11 @@ class ShotRecordsTable extends React.Component {
             }
         }
 
-        this.setState({
-            sortedColId: colId,
-            sortOrder: newSortOrder
-        });
+        let shotPageQuery = {...this.state.shotPageQuery};
+        shotPageQuery.sortOrder = newSortOrder;
+        shotPageQuery.sortedColId = colId;
 
-        this.retrieveShotPage();
+        this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
     }
 
     roundToThreeDecimalPlaces(num) {
@@ -228,23 +170,33 @@ class ShotRecordsTable extends React.Component {
     }
     
     handlePageChange(page) {
-        this.setState({ page: page });
+        let shotPageQuery = {...this.state.shotPageQuery};
+        shotPageQuery.page = page;
 
-        this.retrieveShotPage();
+        this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
     }
 
     handlePageSizeChange(pageSize) {
-        this.setState({ pageSize: pageSize });
+        let shotPageQuery = {...this.state.shotPageQuery};
+        shotPageQuery.pageSize = pageSize;
 
-        this.retrieveShotPage();
+        this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
     }
 
-    retrieveShotPage() {
-        this.getShotPage()
-            .then(res => res.json())
+    retrieveAndSetShotPageUsingQuery(shotPageQuery) {
+        this.getShotPage(shotPageQuery)
             .then(res => {
-                res.shots.forEach(shot => shot.timestamp = new Date(shot.timestamp));
+                this.setState({
+                    shotPageQuery: shotPageQuery,
+                    shots: res.shots,
+                    totalItems: res.totalItems
+                });
+            });
+    }
 
+    retrieveAndSetShots() {
+        this.getShotPage()
+            .then(res => {
                 this.setState({
                     shots: res.shots,
                     totalItems: res.totalItems
@@ -252,16 +204,12 @@ class ShotRecordsTable extends React.Component {
             });
     }
 
-    getShotPage() {
-        let pageQuery = {
-            page: this.state.page,
-            pageSize: this.state.pageSize,
-            filter: this.state.filter,
-            sortedColId: this.state.sortedColId,
-            sortOrder: this.state.sortOrder
-        };
-
-        return this._api.getShotPage(pageQuery);
+    getShotPage(pageQuery) {
+        return this._api.getShotPage(pageQuery)
+            .then(res => res.json())
+            .then(res => {
+                res.shots.forEach(shot => shot.timestamp = new Date(shot.timestamp));
+            });
     }
 }
 
