@@ -5,8 +5,8 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import { Roaster, RoasterBean } from '../FilterSelector/FilterSelector';
 import TablePagination from './TablePagination';
 import TableToolbar from './TableToolbar';
 
@@ -161,13 +161,11 @@ class ShotRecordsTable extends React.Component {
                 <TableBody>
                     {RenderCells(shotDisplayRecords, this.cols)}
                 </TableBody>
-                <TableFooter>
-                    <TablePagination
-                        goToPage={page => this.handlePageChange(page)}
-                        page={this.state.page}
-                        pageSize={this.state.pageSize}
-                        totalItems={this.state.totalItems} />
-                </TableFooter>
+                <TablePagination
+                    goToPage={page => this.handlePageChange(page)}
+                    page={this.state.page}
+                    pageSize={this.state.pageSize}
+                    totalItems={this.state.totalItems} />
             </Table>
         );
     }

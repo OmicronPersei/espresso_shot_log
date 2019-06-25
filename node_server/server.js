@@ -4,8 +4,8 @@ const config = require('./config.js');
 const serverConfig = config();
 
 
-export const Roaster = "Roaster";
-export const RoasterBean = "Roaster/Bean";
+const Roaster = "Roaster";
+const RoasterBean = "Roaster/Bean";
 
 //mock data for testing
 //probably eventually replace with some kind of light weight SQL DB.
