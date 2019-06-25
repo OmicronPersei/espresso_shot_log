@@ -237,7 +237,7 @@ const requestHandlers = {
 
                 let totalItems = shots.length;
                 
-                if (parsedBody.sortedColId && parsedBody.sortDirection) {
+                if (parsedBody.sortedColId && parsedBody.sortOrder) {
                     shots = sortShots(parsedBody.sortOrder, parsedBody.sortedColId, shots);
                 }
                 
@@ -245,7 +245,7 @@ const requestHandlers = {
                 let takeAmount = parsedBody.pageSize;
                 //0 1 2 3 4
                 //skip 2 take 2
-                shots = shots.filter(index => 
+                shots = shots.filter((val,index) => 
                     index >= skipAmount && 
                     index < (skipAmount + takeAmount));
                 
