@@ -5,13 +5,13 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import LastPageIcon from '@material-ui/icons/LastPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import TableFooter from '@material-ui/core/TableFooter';
 
-class TablePagination extends React.Component {
+
+class TablePaginationActions extends React.Component {
 
     render() {
         return (
-            <TableFooter>
+            <div>
                 <IconButton
                     onClick={() => this.goToFirstPage()}
                     disabled={this.props.page === 0}
@@ -36,20 +36,20 @@ class TablePagination extends React.Component {
                 >
                     <LastPageIcon />
                 </IconButton>
-            </TableFooter>
+            </div>
         );
     }
 
     goToFirstPage() {
-        this.props.goToPage(0);
+        this.props.onChangePage(0);
     }
 
     goToPreviousPage() {
-        this.props.goToPage(this.props.page-1);
+        this.props.onChangePage(this.props.page-1);
     }
 
     goToNextPage() {
-        this.props.goToPage(this.props.page+1);
+        this.props.onChangePage(this.props.page+1);
     }
 
     get totalPages() {
@@ -61,8 +61,8 @@ class TablePagination extends React.Component {
     }
 
     goToLastPage() {
-        this.props.goToPage(this.lastPage);
+        this.props.onChangePage(this.lastPage);
     }
 }
 
-export default TablePagination;
+export default TablePaginationActions;

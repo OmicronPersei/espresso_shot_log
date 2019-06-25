@@ -5,10 +5,13 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-
+import TablePagination from '@material-ui/core/TablePagination';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import TablePagination from './TablePagination';
 import TableToolbar from './TableToolbar';
+
+import TableFooter from '@material-ui/core/TableFooter';
+
+import TablePaginationActions from './TablePaginationActions';
 
 import API from '../../API';
 
@@ -50,6 +53,10 @@ class ShotRecordsTable extends React.Component {
         };
 
         this._api = new API();
+    }
+
+    componentDidMount() {
+        this.retrieveShotPage();
     }
 
     render() {
@@ -161,11 +168,19 @@ class ShotRecordsTable extends React.Component {
                 <TableBody>
                     {RenderCells(shotDisplayRecords, this.cols)}
                 </TableBody>
-                <TablePagination
-                    goToPage={page => this.handlePageChange(page)}
-                    page={this.state.page}
-                    pageSize={this.state.pageSize}
-                    totalItems={this.state.totalItems} />
+                <TableFooter>
+                    <TableRow>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            count={this.state.totalItems}
+                            rowsPerPage={this.state.pageSize}
+                            page={this.state.page}
+                            onChangePage={page => this.handlePageChange(page)}
+                            onChangeRowsPerPage={event => this.handlePageSizeChange(event.target.value)}
+                            ActionsComponent={TablePaginationActions}
+                            />
+                    </TableRow>
+                </TableFooter>
             </Table>
         );
     }
@@ -211,9 +226,18 @@ class ShotRecordsTable extends React.Component {
         this.retrieveShotPage();
     }
 
+    handlePageSizeChange(pageSize) {
+        this.setState({ pageSize: pageSize });
+
+        this.retrieveShotPage();
+    }
+
     retrieveShotPage() {
         this.getShotPage()
+            .then(res => res.json())
             .then(res => {
+                res.shots.forEach(shot => shot.timestamp = new Date(shot.timestamp));
+
                 this.setState({
                     shots: res.shots,
                     totalItems: res.totalItems

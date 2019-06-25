@@ -5,7 +5,7 @@ class API {
         this._config = config();
     }
 
-    getAllData() {
+    getMetadata() {
         let endpoint = `${this._config.apiurl}/metadata`;
         let headers = new Headers();
         headers.set("Content-type", "application-json");
@@ -70,12 +70,12 @@ class API {
     }
 
     getShotPage(pageData) {
-        let url = `${this._config.apiurl}/shots`;
+        let url = `${this._config.apiurl}/shots/find`;
         let headers = new Headers();
         let body = JSON.stringify(pageData);
         let requestInit = {
             headers: headers,
-            method: "GET",
+            method: "POST",
             body: body
         };
 

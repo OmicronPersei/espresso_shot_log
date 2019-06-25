@@ -32,12 +32,10 @@ class MainDisplay extends React.Component {
     }
 
     getMetadata() {
-        this._api.getAllData()
+        this._api.getMetadata()
             .then(res => {
                 res.json()
                     .then(obj => {
-                        obj.shots.forEach(shot => shot.timestamp = new Date(shot.timestamp));
-                        
                         this.setState({
                             roasters: obj.roasters,
                             beans: obj.beans,

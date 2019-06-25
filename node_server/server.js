@@ -222,26 +222,27 @@ const sortShots = function(sortOrder, sortedColId, shots) {
 }
 
 const requestHandlers = {
-    "/shots": {
-        GET: (req, res) => {
+    "/shots/find": {
+        POST: (req, res) => {
             getBodyFromRequest(req, body => {
+                let parsedBody = JSON.parse(body);
                 let shots = mockShotStorage;
 
                 //append brew_ratio
                 shots.forEach(shot => shot.brew_ratio = shot.brew_amount_grams / shot.dose_amount_grams);
                 
-                if (body.filter.filterType) {
-                    shots = filterShots(body.filter, shots);
+                if (parsedBody.filter.filterType) {
+                    shots = filterShots(parsedBody.filter, shots);
                 }
 
                 let totalItems = shots.length;
                 
-                if (body.sortedColId && body.sortDirection) {
-                    shots = sortShots(body.sortOrder, body.sortedColId, shots);
+                if (parsedBody.sortedColId && parsedBody.sortDirection) {
+                    shots = sortShots(parsedBody.sortOrder, parsedBody.sortedColId, shots);
                 }
                 
-                let skipAmount = body.page * body.pageSize;
-                let takeAmount = body.pageSize;
+                let skipAmount = parsedBody.page * parsedBody.pageSize;
+                let takeAmount = parsedBody.pageSize;
                 //0 1 2 3 4
                 //skip 2 take 2
                 shots = shots.filter(index => 
@@ -252,8 +253,9 @@ const requestHandlers = {
                     shots: shots,
                     totalItems: totalItems
                 };
+                let returnObjJSON = JSON.stringify(returnObj);
 
-                returnOk(res, returnObj);
+                returnOk(res, returnObjJSON);
             });
         }
     },
