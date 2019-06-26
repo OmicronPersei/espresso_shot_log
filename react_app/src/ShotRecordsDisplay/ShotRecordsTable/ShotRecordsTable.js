@@ -97,7 +97,7 @@ class ShotRecordsTable extends React.Component {
     }
 
     handleFilterChange(filter) {
-        let shotPageQuery = {...prevState.shotPageQuery};
+        let shotPageQuery = {...this.state.shotPageQuery};
         shotPageQuery.filter = filter;
 
         this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
@@ -123,8 +123,8 @@ class ShotRecordsTable extends React.Component {
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25]}
                             count={this.state.totalItems}
-                            rowsPerPage={this.state.pageSize}
-                            page={this.state.page}
+                            rowsPerPage={this.state.shotPageQuery.pageSize}
+                            page={this.state.shotPageQuery.page}
                             onChangePage={page => this.handlePageChange(page)}
                             onChangeRowsPerPage={event => this.handlePageSizeChange(event.target.value)}
                             ActionsComponent={TablePaginationActions}
@@ -195,7 +195,7 @@ class ShotRecordsTable extends React.Component {
     }
 
     retrieveAndSetShots() {
-        this.getShotPage()
+        this.getShotPage(this.state.shotPageQuery)
             .then(res => {
                 this.setState({
                     shots: res.shots,
@@ -209,6 +209,8 @@ class ShotRecordsTable extends React.Component {
             .then(res => res.json())
             .then(res => {
                 res.shots.forEach(shot => shot.timestamp = new Date(shot.timestamp));
+
+                return res;
             });
     }
 }
