@@ -53,7 +53,7 @@ class TablePaginationActions extends React.Component {
     }
 
     get totalPages() {
-        return Math.ceil(this.props.totalItems / this.props.pageSize);
+        return Math.ceil(this.props.count / this.props.rowsPerPage);
     }
 
     get lastPage() {
