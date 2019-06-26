@@ -209,13 +209,12 @@ const processRequest = function(req, res) {
 }
 
 const filterShots = function(filterObj, shots) {
-    let x = [];
     switch (filterObj.filterType.toLowerCase()) {
         case Roaster.toLowerCase():
-            return shots.filter(r => r.roaster.value === filterObj.roaster);
+            return shots.filter(r => r.roaster === filterObj.roaster);
 
         case RoasterBean.toLowerCase():
-            return shots.filter(r => (r.roaster.value === filterObj.roaster) && (r.bean.value === filterObj.bean));
+            return shots.filter(r => (r.roaster === filterObj.roaster) && (r.bean === filterObj.bean));
 
         default:
             throw new Error("Unknown filter type");
