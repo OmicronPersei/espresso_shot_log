@@ -3,7 +3,6 @@ const http = require('http');
 const config = require('./config.js');
 const serverConfig = config();
 
-
 const Roaster = "Roaster";
 const RoasterBean = "Roaster/Bean";
 
@@ -107,16 +106,6 @@ let mockShotStorage = [
         timestamp: new Date("2019-06-19 11:36")
     }
 ];
-
-// let roasters = [
-//     "Counter culture",
-//     "Starbucks"
-// ];
-
-// let beans = {
-//     "Counter culture": ["Apollo", "Hologram"],
-//     "Starbucks": ["House blend", "Yukon"]
-// };
 
 let issues = [
     "Spritzers",
@@ -236,7 +225,7 @@ const sortShots = function(sortOrder, sortedColId, shots) {
     const getValForSorting = val => val[sortedColId];
     let matchingCol = cols.find(col => col.id === sortedColId);
 
-    return shotDisplayRecords.sort((a,b) => {
+    return shots.sort((a,b) => {
         let aVal = getValForSorting(a);
         let bVal = getValForSorting(b);
 

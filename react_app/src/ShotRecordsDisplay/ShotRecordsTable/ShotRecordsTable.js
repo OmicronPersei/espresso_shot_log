@@ -136,14 +136,14 @@ class ShotRecordsTable extends React.Component {
     }
 
     handleChangeSortedColIdChange(colId) {
-        let prevSortedColId = this.state.sortedColId;
+        let prevSortedColId = this.state.shotPageQuery.sortedColId;
         let newSortOrder = "";
 
         if (prevSortedColId !== colId) {
             newSortOrder = "desc";
         } else {
             //order: (nosort), descending, ascending
-            switch (this.state.sortOrder) {
+            switch (this.state.shotPageQuery.sortOrder) {
                 case "desc":
                     newSortOrder = "asc";
                     break;
