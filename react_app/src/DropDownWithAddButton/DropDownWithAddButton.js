@@ -99,7 +99,9 @@ class DropDownWithAddButton extends React.Component {
         this.state = {
             value: "",
             addingNewItem: false,
-            addingNewItemValid: true
+            addingNewItemValid: true,
+            itemsHasNewValue: false,
+            newValue: null
         };
     }
 
@@ -116,8 +118,14 @@ class DropDownWithAddButton extends React.Component {
     }
 
     renderMenuItemsSelect() {
+        let items = this.props.items;
+        if (this.state.itemsHasNewValue) {
+            items = items.slice();
+            items.push(this.state.newValue);
+        }
+
         return renderMenuItemsWithAddbutton({
-            items: this.props.items,
+            items: items,
             value: this.state.value,
             onChange: (item) => this.handleItemSelectChange(item),
             onAddClick: () => this.handleAddButtonClick(),
@@ -161,18 +169,16 @@ class DropDownWithAddButton extends React.Component {
 
     handleAddNewItem() {
        this.raiseOnNewItemAddedCallback(this.state.value);
-    }
-
-    componentDidUpdate(prevProps) {
-        let noLongerSavingValue = !this.props.disabled && prevProps.disabled;
-        if (noLongerSavingValue) {
-            this.finishedAddingItem();
-        }
+       this.finishedAddingItem();
     }
 
     finishedAddingItem() {
-        this.setState({
-            addingNewItem: false
+        this.setState(prevState => {
+            return {
+                addingNewItem: false,
+                itemsHasNewValue: true,
+                newValue: prevState.value
+            };
         });
     }
 

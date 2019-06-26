@@ -50,9 +50,7 @@ class NewShotLogEntryForm extends React.Component {
                                 items={this.props.roasters} 
                                 name="Roaster" 
                                 onChange={val => this.handleValueChange("roaster", val)}
-                                onNewItemAdded={newItem => this.handleNewRoasterAdded(newItem)}
-                                onStartAddNewItem={() => this.handleOnStartAddingNewRoaster()}
-                                disabled={this.props.awaitingAPICallback.savingNewRoaster} />
+                                onStartAddNewItem={() => this.handleOnStartAddingNewRoaster()}/>
                         </div>
                     </Grid>
                     {this.renderBeansGridItem()}
@@ -151,8 +149,6 @@ class NewShotLogEntryForm extends React.Component {
     }
 
     handleNewRoasterAdded(newVal) {
-        this.props.onNewRoasterAdded(newVal);
-
         this.handleValueChange("roaster", newVal);
     }
 
@@ -167,9 +163,7 @@ class NewShotLogEntryForm extends React.Component {
                     <DropDownWithAddButton
                         items={beansForRoaster}
                         name="Bean"
-                        onChange={bean => this.handleValueChange("bean", bean)}
-                        onNewItemAdded={bean => this.handleNewBeanTypeAdded(bean)} 
-                        disabled={this.props.awaitingAPICallback.savingNewBean}/>
+                        onChange={bean => this.handleValueChange("bean", bean)} />
                 </div>
             );
         }
@@ -197,10 +191,6 @@ class NewShotLogEntryForm extends React.Component {
 
     handleNewBeanSelected(bean) {
         this.handleValueChange("bean", bean);
-    }
-
-    handleNewBeanTypeAdded(bean) {
-        this.props.onNewBeanAddedForRoaster(this.state.form.roaster, bean);
     }
 
     handleNewIssueAdded(issue) {

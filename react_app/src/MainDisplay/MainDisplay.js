@@ -22,16 +22,14 @@ class MainDisplay extends React.Component {
             newShotLogEntryFormModalOpen: false,
             awaitingAPICallback: {
                 savingNewShot: false,
-                savingNewRoaster: false,
-                savingNewBean: false,
                 savingNewIssue: false
             }
         };
 
-        this.getMetadata();
+        this.getAllMetadata();
     }
 
-    getMetadata() {
+    getAllMetadata() {
         this._api.getMetadata()
             .then(res => {
                 res.json()
@@ -70,8 +68,6 @@ class MainDisplay extends React.Component {
                     roasters={this.state.roasters}
                     beans={this.state.beans}
                     issues={this.state.issues}
-                    onNewRoasterAdded={roaster => this.handleNewRoasterAdded(roaster)}
-                    onNewBeanAddedForRoaster={(roaster, bean) => this.handleNewBeanAddedForRoaster(roaster, bean)}
                     onNewIssueAdded={(issue) => this.handleNewIssueAdded(issue)}
                     onAddShotRecord={(shot) => this.handleAddNewShotRecord(shot)}
                     awaitingAPICallback={this.state.awaitingAPICallback}
@@ -90,51 +86,6 @@ class MainDisplay extends React.Component {
         this.setState({
             newShotLogEntryFormModalOpen: false
         });
-    }
-
-    handleNewRoasterAdded(roaster) {
-        this.setWaitingOnAPIFlag("savingNewRoaster", true)
-            .then(() => {
-                return this._api.addNewRoaster(roaster);
-            })
-            .then(() => {
-                console.log("successfully saved new roaster " + roaster);
-    
-                this.setState(prevState => {
-                    let roasters = prevState.roasters.slice();
-                    roasters.push(roaster);
-                    let beans = {...prevState.beans};
-                    beans[roaster] = [];
-        
-                    return {
-                        roasters: roasters,
-                        beans: beans
-                    };
-                });
-            })
-            .catch(error => this.handleAPIError("save new roaster", error))
-            .then(() => this.setWaitingOnAPIFlag("savingNewRoaster", false));
-    }
-
-    handleNewBeanAddedForRoaster(roaster, bean) {
-        this.setWaitingOnAPIFlag("savingNewBean", true)
-            .then(() => {
-                return this._api.addNewBeanForRoaster(roaster, bean);
-            })
-            .then(() => {
-                console.log(`successfully added the bean ${bean} for roaster ${roaster}`);
-                this.setState(prevState => {
-                    let beans = {...prevState.beans};
-        
-                    beans[roaster].push(bean);
-        
-                    return {
-                        beans: beans
-                    };
-                });
-            })
-            .catch(error => this.handleAPIError("saving new bean", error))
-            .then(() => this.setWaitingOnAPIFlag("savingNewBean", false));
     }
 
     handleNewIssueAdded(issue) {
@@ -160,26 +111,16 @@ class MainDisplay extends React.Component {
 
     handleAddNewShotRecord(shot) {
         this.setWaitingOnAPIFlag("savingNewShot", true)
-            .then(() => {
-                return this._api.addNewShotRecord(shot);
-            })
-            .then(res => {
-                return res.json();
-            })
+            .then(() => this._api.addNewShotRecord(shot))
             .then(res => {
                 console.log(`successfully saved shot ${res}`);
-                let shotId = res;
-                let newShotRecord = {
-                    ...shot,
-                    id: shotId
-                };
-                this.setState(prevState => {
-                    let shots = prevState.shots.slice();
-                    shots.push(newShotRecord);
-        
-                    return {
-                        shots: shots
-                    };
+                return this._api.getMetadata();
+            })
+            .then(res => res.json())
+            .then(res => {
+                this.setState({
+                    roasters: res.roasters,
+                    beans: res.beans
                 });
             })
             .catch(error => this.handleAPIError("saving new shot", error))

@@ -108,15 +108,15 @@ let mockShotStorage = [
     }
 ];
 
-let roasters = [
-    "Counter culture",
-    "Starbucks"
-];
+// let roasters = [
+//     "Counter culture",
+//     "Starbucks"
+// ];
 
-let beans = {
-    "Counter culture": ["Apollo", "Hologram"],
-    "Starbucks": ["House blend", "Yukon"]
-};
+// let beans = {
+//     "Counter culture": ["Apollo", "Hologram"],
+//     "Starbucks": ["House blend", "Yukon"]
+// };
 
 let issues = [
     "Spritzers",
@@ -318,40 +318,6 @@ const requestHandlers = {
                 };
                 mockShotStorage.push(newShotRecord);
 
-                returnOk(res, newId.toString());
-            });
-        }
-    },
-    "/beans": {
-        GET: (req, res) => {
-            respondWithJSON(res, mockShotStorage);
-        }
-    },
-    "/beans/add": {
-        POST: (req, res) => {
-            getBodyFromRequest(req, body => {
-                bodyJSON = JSON.parse(body);
-                let roaster = bodyJSON.roaster;
-                let bean = bodyJSON.bean;
-
-                beans[roaster].push(bean);
-
-                returnOk(res);
-            });
-        }
-    },
-    "/roasters": {
-        GET: (req, res) => {
-            respondWithJSON(res, mockShotStorage);
-        }
-    },
-    "/roasters/add": {
-        POST: (req, res) => {
-            getBodyFromRequest(req, body => {
-                let roaster = body;
-                roasters.push(roaster);
-                beans[roaster] = [];
-
                 returnOk(res);
             });
         }
@@ -373,9 +339,11 @@ const requestHandlers = {
     },
     "/metadata": {
         GET: (req, res) => {
+            let roastersAndBeans = getUniqueRoastersAndBeans();
+
             let all = {
-                roasters: roasters,
-                beans: beans,
+                roasters: roastersAndBeans.uniqueRoasters,
+                beans: roastersAndBeans.uniqueRoasterBeans,
                 issues: issues
             };
 
@@ -419,4 +387,51 @@ const addCORSHeader = function(res) {
 
 const addJSONContentTypeHeader = function(res) {
     res.setHeader("Content-Type", "application/json");
+}
+
+const getUniqueRoastersAndBeans = function() {
+    let uniqueRoasters = getUniqueRoasters();
+    let uniqueRoasterBeans = {};
+    uniqueRoasters.forEach(roaster => {
+        uniqueRoasterBeans[roaster] = new Set();
+    });
+
+    mockShotStorage.forEach(shot => {
+        let matchingRoasterSet = uniqueRoasterBeans[shot.roaster];
+
+        if (!matchingRoasterSet.has(shot.bean)) {
+            matchingRoasterSet.add(shot.bean);
+        }
+    });
+
+    Object.getOwnPropertyNames(uniqueRoasterBeans).forEach(roaster => {
+        uniqueRoasterBeans[roaster] = Array.from(uniqueRoasterBeans[roaster]);
+    });
+
+    return {
+        uniqueRoasters: uniqueRoasters,
+        uniqueRoasterBeans: uniqueRoasterBeans
+    };
+}
+
+const getUniqueRoasters = function() {
+    return Array.from(getUniqueItems(mockShotStorage, x => x.roaster));
+}
+
+const getUniqueItems = function(collection, delegate) {
+    let uniqueItems = new Set();
+    collection.forEach(record => {
+        let item = undefined;
+        if (delegate) {
+            item = delegate(record);
+        } else {
+            item = record;
+        }
+
+        if (!uniqueItems.has(item)) {
+            uniqueItems.add(item);
+        }
+    });
+
+    return uniqueItems;
 }
