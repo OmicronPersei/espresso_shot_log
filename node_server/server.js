@@ -13,8 +13,8 @@ let mockShotStorage = [
         roaster: "Counter culture",
         bean: "Apollo",
         grinder_setting: "1.8",
-        dose_amount_grams: 18,
-        brew_amount_grams: 24,
+        dose_amount_grams: 34,
+        brew_amount_grams: 12,
         brew_time_seconds: 35,
         bitter_sour: "+2 (bitter)",
         issues: "",
@@ -25,8 +25,8 @@ let mockShotStorage = [
         roaster: "Counter culture",
         bean: "Bsdfasdf",
         grinder_setting: "1.8",
-        dose_amount_grams: 18,
-        brew_amount_grams: 24,
+        dose_amount_grams: 32,
+        brew_amount_grams: 12,
         brew_time_seconds: 36,
         bitter_sour: "+33 (bitter)",
         issues: "",
@@ -37,8 +37,8 @@ let mockShotStorage = [
         roaster: "Counter culture",
         bean: "Csfsdf",
         grinder_setting: "1.8",
-        dose_amount_grams: 18,
-        brew_amount_grams: 24,
+        dose_amount_grams: 31,
+        brew_amount_grams: 13,
         brew_time_seconds: 37,
         bitter_sour: "+1 (bitter)",
         issues: "",
@@ -49,8 +49,8 @@ let mockShotStorage = [
         roaster: "Counter culture",
         bean: "Csfsdf",
         grinder_setting: "1.8",
-        dose_amount_grams: 18,
-        brew_amount_grams: 24,
+        dose_amount_grams: 32,
+        brew_amount_grams: 23,
         brew_time_seconds: 37,
         bitter_sour: "0",
         issues: "",
@@ -61,8 +61,8 @@ let mockShotStorage = [
         roaster: "Counter culture",
         bean: "Csfsdf",
         grinder_setting: "1.8",
-        dose_amount_grams: 18,
-        brew_amount_grams: 24,
+        dose_amount_grams: 23,
+        brew_amount_grams: 21,
         brew_time_seconds: 37,
         bitter_sour: "0",
         issues: "",
@@ -73,8 +73,8 @@ let mockShotStorage = [
         roaster: "Counter culture",
         bean: "Csfsdf",
         grinder_setting: "1.8",
-        dose_amount_grams: 18,
-        brew_amount_grams: 24,
+        dose_amount_grams: 23,
+        brew_amount_grams: 22,
         brew_time_seconds: 37,
         bitter_sour: "0",
         issues: "",
@@ -85,8 +85,8 @@ let mockShotStorage = [
         roaster: "Counter culture",
         bean: "Csfsdf",
         grinder_setting: "1.8",
-        dose_amount_grams: 18,
-        brew_amount_grams: 24,
+        dose_amount_grams: 32,
+        brew_amount_grams: 21,
         brew_time_seconds: 37,
         bitter_sour: "0",
         issues: "",
@@ -97,8 +97,8 @@ let mockShotStorage = [
         roaster: "Counter culture",
         bean: "Csfsdf",
         grinder_setting: "1.8",
-        dose_amount_grams: 18,
-        brew_amount_grams: 24,
+        dose_amount_grams: 32,
+        brew_amount_grams: 21.4,
         brew_time_seconds: 37,
         bitter_sour: "0",
         issues: "",
@@ -219,7 +219,12 @@ const sortShots = function(sortOrder, sortedColId, shots) {
         { id: "brew_amount_grams", sortAsNumber: true },
         { id: "brew_ratio", sortAsNumber: true },
         { id: "brew_time_seconds", sortAsNumber: true },
-        { id: "bitter_sour", sortAsNumber: true },
+        { id: "bitter_sour", sortAsNumber: false, compareFunc: (a,b) => {
+            let aVal = a.replace(/\D*/g, "");
+            let bVal = b.replace(/\D*/g, "");
+
+            return aVal - bVal;
+        } },
     ];
 
     const getValForSorting = val => val[sortedColId];
@@ -235,6 +240,12 @@ const sortShots = function(sortOrder, sortedColId, shots) {
                 return aVal - bVal;
             } else {
                 return bVal - aVal;
+            }
+        } else if (matchingCol.compareFunc) {
+            if (isAsc) {
+                return matchingCol.compareFunc(aVal, bVal);
+            } else {
+                return matchingCol.compareFunc(bVal, aVal);
             }
         } else {
             if (isAsc) {
