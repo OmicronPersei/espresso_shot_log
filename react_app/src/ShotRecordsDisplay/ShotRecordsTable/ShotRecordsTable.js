@@ -107,8 +107,8 @@ class ShotRecordsTable extends React.Component {
         
         let headerProps = {
             cols: this.cols,
-            sortedColId: this.state.sortedColId,
-            order: this.state.sortOrder,
+            sortedColId: this.state.shotPageQuery.sortedColId,
+            order: this.state.shotPageQuery.sortOrder,
             onChangeSortedCol: (x) => this.handleChangeSortedColIdChange(x)
         };
 
