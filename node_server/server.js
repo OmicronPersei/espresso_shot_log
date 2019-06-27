@@ -229,12 +229,12 @@ const sortShots = function(sortOrder, sortedColId, shots) {
 
     const getValForSorting = val => val[sortedColId];
     let matchingCol = cols.find(col => col.id === sortedColId);
+    let isAsc = sortOrder === "asc";
 
     return shots.sort((a,b) => {
         let aVal = getValForSorting(a);
         let bVal = getValForSorting(b);
-
-        let isAsc = sortOrder === "asc";
+        
         if (matchingCol.sortAsNumber) {
             if (isAsc) {
                 return aVal - bVal;
