@@ -6,12 +6,13 @@ import LastPageIcon from '@material-ui/icons/LastPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
+import './style.css';
 
 class TablePaginationActions extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="table-pagination-actions">
                 <IconButton
                     onClick={() => this.goToFirstPage()}
                     disabled={this.props.page === 0}
