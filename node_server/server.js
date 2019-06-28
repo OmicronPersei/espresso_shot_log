@@ -272,54 +272,54 @@ const sortShots = function(sortOrder, sortedColId, shots) {
 const requestHandlers = {
     "/shots/find": {
         POST: (req, res) => {
-            getBodyFromRequest(req, body => {
-                let parsedBody = JSON.parse(body);
-                let shots = mockShotStorage;
+            getBodyFromRequest(req)
+                .then(resolve => {
+                    let parsedBody = JSON.parse(resolve);
+                    let shots = mockShotStorage;
 
-                //append brew_ratio
-                shots.forEach(shot => shot.brew_ratio = shot.brew_amount_grams / shot.dose_amount_grams);
-                
-                if (parsedBody.filter.filterType) {
-                    shots = filterShots(parsedBody.filter, shots);
-                }
+                    //append brew_ratio
+                    shots.forEach(shot => shot.brew_ratio = shot.brew_amount_grams / shot.dose_amount_grams);
+                    
+                    if (parsedBody.filter.filterType) {
+                        shots = filterShots(parsedBody.filter, shots);
+                    }
 
-                let totalItems = shots.length;
-                
-                if (parsedBody.sortedColId && parsedBody.sortOrder) {
-                    shots = sortShots(parsedBody.sortOrder, parsedBody.sortedColId, shots);
-                }
-                
-                let skipAmount = parsedBody.page * parsedBody.pageSize;
-                let takeAmount = parsedBody.pageSize;
-                //0 1 2 3 4
-                //skip 2 take 2
-                shots = shots.filter((val,index) => 
-                    index >= skipAmount && 
-                    index < (skipAmount + takeAmount));
-                
-                let returnObj = {
-                    shots: shots,
-                    totalItems: totalItems
-                };
-                let returnObjJSON = JSON.stringify(returnObj);
+                    let totalItems = shots.length;
+                    
+                    if (parsedBody.sortedColId && parsedBody.sortOrder) {
+                        shots = sortShots(parsedBody.sortOrder, parsedBody.sortedColId, shots);
+                    }
+                    
+                    let skipAmount = parsedBody.page * parsedBody.pageSize;
+                    let takeAmount = parsedBody.pageSize;
+                    shots = shots.filter((val,index) => 
+                        index >= skipAmount && 
+                        index < (skipAmount + takeAmount));
+                    
+                    let returnObj = {
+                        shots: shots,
+                        totalItems: totalItems
+                    };
+                    let returnObjJSON = JSON.stringify(returnObj);
 
-                returnOk(res, returnObjJSON);
-            });
+                    returnOk(res, returnObjJSON);
+                });
         }
     },
     "/shots/add": {
         POST: (req, res) => {
             let newId = mockShotStorage.length + 1;
-            getBodyFromRequest(req, body => {
-                let obj = JSON.parse(body);
-                let newShotRecord = {
-                    ...obj,
-                    id: newId
-                };
-                mockShotStorage.push(newShotRecord);
+            getBodyFromRequest(req)
+                .then(resolve => {
+                    let obj = JSON.parse(resolve);
+                    let newShotRecord = {
+                        ...obj,
+                        id: newId
+                    };
+                    mockShotStorage.push(newShotRecord);
 
-                returnOk(res);
-            });
+                    returnOk(res);
+                });
         }
     },
     "/issues": {
@@ -329,12 +329,13 @@ const requestHandlers = {
     },
     "/issues/add": {
         POST: (req, res) => {
-            getBodyFromRequest(req, body => {
-                let issue = body;
-                issues.push(issue);
+            getBodyFromRequest(req)
+                .then(resolve => {
+                    let issue = resolve;
+                    issues.push(issue);
 
-                returnOk(res);
-            });
+                    returnOk(res);
+                })
         }
     },
     "/metadata": {
@@ -352,14 +353,15 @@ const requestHandlers = {
     }
 };
 
-//todo: refactor this to be a Promise.
-const getBodyFromRequest = function(req, bodyReadCallback) {
-    let body = [];
-    req.on('data', chunk => {
-        body.push(chunk);
-    }).on('end', () => {
-        let bodyStr = Buffer.concat(body).toString();
-        bodyReadCallback(bodyStr);
+const getBodyFromRequest = function(req) {
+    return new Promise(resolve => {
+        let body = [];
+        req.on('data', chunk => {
+            body.push(chunk);
+        }).on('end', () => {
+            let bodyStr = Buffer.concat(body).toString();
+            resolve(bodyStr);
+        });
     });
 }
 
