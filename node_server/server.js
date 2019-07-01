@@ -1,121 +1,11 @@
 const http = require('http');
 
-const config = require('./config.js');
+const config = require('./config');
 const serverConfig = config();
 
-const Roaster = "Roaster";
-const RoasterBean = "Roaster/Bean";
-
-//mock data for testing
-//probably eventually replace with some kind of light weight SQL DB.
-let mockShotStorage = [
-    {
-        roaster: "Counter culture",
-        bean: "Apollo",
-        grinder_setting: "1.8",
-        dose_amount_grams: 34,
-        brew_amount_grams: 12,
-        brew_time_seconds: 35,
-        bitter_sour: "+2 (bitter)",
-        issues: "",
-        id: 1,
-        timestamp: new Date("2019-06-19 11:30")
-    },
-    {
-        roaster: "Counter culture",
-        bean: "Bsdfasdf",
-        grinder_setting: "1.8",
-        dose_amount_grams: 32,
-        brew_amount_grams: 12,
-        brew_time_seconds: 36,
-        bitter_sour: "+33 (bitter)",
-        issues: "",
-        id: 2,
-        timestamp: new Date("2019-06-19 11:32")
-    },
-    {
-        roaster: "Counter culture",
-        bean: "Csfsdf",
-        grinder_setting: "1.8",
-        dose_amount_grams: 31,
-        brew_amount_grams: 13,
-        brew_time_seconds: 37,
-        bitter_sour: "+1 (bitter)",
-        issues: "",
-        id: 3,
-        timestamp: new Date("2019-06-19 11:34")
-    },
-    {
-        roaster: "Counter culture",
-        bean: "Csfsdf",
-        grinder_setting: "1.8",
-        dose_amount_grams: 32,
-        brew_amount_grams: 23,
-        brew_time_seconds: 37,
-        bitter_sour: "0",
-        issues: "",
-        id: 4,
-        timestamp: new Date("2019-06-19 11:36")
-    },
-    {
-        roaster: "Counter culture",
-        bean: "Csfsdf",
-        grinder_setting: "1.8",
-        dose_amount_grams: 23,
-        brew_amount_grams: 21,
-        brew_time_seconds: 37,
-        bitter_sour: "0",
-        issues: "",
-        id: 5,
-        timestamp: new Date("2019-06-19 11:36")
-    },
-    {
-        roaster: "Counter culture",
-        bean: "Csfsdf",
-        grinder_setting: "1.8",
-        dose_amount_grams: 23,
-        brew_amount_grams: 22,
-        brew_time_seconds: 37,
-        bitter_sour: "0",
-        issues: "",
-        id: 6,
-        timestamp: new Date("2019-06-19 11:36")
-    },
-    {
-        roaster: "Counter culture",
-        bean: "Csfsdf",
-        grinder_setting: "1.8",
-        dose_amount_grams: 32,
-        brew_amount_grams: 21,
-        brew_time_seconds: 37,
-        bitter_sour: "0",
-        issues: "",
-        id: 7,
-        timestamp: new Date("2019-06-19 11:36")
-    },
-    {
-        roaster: "Counter culture",
-        bean: "Csfsdf",
-        grinder_setting: "1.8",
-        dose_amount_grams: 32,
-        brew_amount_grams: 21.4,
-        brew_time_seconds: 37,
-        bitter_sour: "0",
-        issues: "",
-        id: 8,
-        timestamp: new Date("2019-06-19 11:36")
-    }
-];
-
-let issues = [
-    "Spritzers",
-    "Extraction too fast",
-    "Extraction too slow"
-];
-
-const http_status_ok = 200;
-const http_status_no_contents = 204;
-const http_status_not_found = 404;
+const rest_endpoints = require('./rest_endpoints');
+const http_status_codes = require('./http_status_codes');
+const node_methods = require('./node_methods');
 
 const server = http.createServer((req, res) => {
     let method = req.method.toUpperCase();
@@ -151,7 +41,7 @@ const methodIsSupported = function(requestedMethod, path) {
 }
 
 const getAllowedMethodsForPath = function(path) {
-    let matchingObj = requestHandlers[path];
+    let matchingObj = rest_endpoints.requestHandlers[path];
     if (!matchingObj) {
         console.error(`Could not find any matching paths for ${path}`);
     } else {
@@ -166,18 +56,14 @@ const getPath = function(req) {
 }
 
 const sendMethodIsSupportedResponse = function(res) {
-    addAllowableHeadersHeader(res);
-    addCORSHeader(res);
-    res.writeHead(http_status_no_contents);
+    node_methods.addAllowableHeadersHeader(res);
+    node_methods.addCORSHeader(res);
+    res.writeHead(http_status_codes.no_contents);
     res.end();
 }
 
-const addAllowableHeadersHeader = function(res) {
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-}
-
 const sendMethodIsNotSupportedResponse = function(res) {
-    res.writeHead(http_status_not_found);
+    res.writeHead(http_status_codes.not_found);
     res.end();
 }
 
@@ -187,253 +73,24 @@ const processRequest = function(req, res) {
 
     console.log(`processing method ${method} path ${path}`);
 
+    let reqHandler = undefined;
+
     try {
-        let reqHandler = requestHandlers[path][method];
+        reqHandler = rest_endpoints.requestHandlers[path][method];
+    }
+    catch (error) {
+        console.error(`Could not find a matching handler for the path ${path} and the verb ${method}`);
+        res.writeHead(http_status_codes.not_found);
+        res.end();
+
+        return;
+    }
+
+    try {
         reqHandler(req, res);
     } catch (error) {
-        console.error(`Could not find a matching handler for the path ${path} and the verb ${method}`);
-        res.writeHead(http_status_not_found);
+        console.error("Encountered error during calling the request handler: " + error);
+        res.writeHead(http_status_codes.internal_server_error);
         res.end();
     }
-}
-
-const filterShots = function(filterObj, shots) {
-    switch (filterObj.filterType.toLowerCase()) {
-        case Roaster.toLowerCase():
-            return shots.filter(r => r.roaster === filterObj.roaster);
-
-        case RoasterBean.toLowerCase():
-            return shots.filter(r => (r.roaster === filterObj.roaster) && (r.bean === filterObj.bean));
-
-        default:
-            throw new Error("Unknown filter type");
-    }
-}
-
-const sortShots = function(sortOrder, sortedColId, shots) {
-    const cols = [
-        { id: "timestamp", sortAsNumber: true },
-        { id: "roaster", sortAsNumber: false },
-        { id: "bean", sortAsNumber: false },
-        { id: "dose_amount_grams", sortAsNumber: true },
-        { id: "brew_amount_grams", sortAsNumber: true },
-        { id: "brew_ratio", sortAsNumber: true },
-        { id: "brew_time_seconds", sortAsNumber: true },
-        { id: "bitter_sour", sortAsNumber: false, compareFunc: (a,b) => {
-            let aVal = a.replace(/\D*/g, "");
-            let bVal = b.replace(/\D*/g, "");
-
-            return aVal - bVal;
-        } },
-    ];
-
-    const getValForSorting = val => val[sortedColId];
-    let matchingCol = cols.find(col => col.id === sortedColId);
-    let isAsc = sortOrder === "asc";
-
-    return shots.sort((a,b) => {
-        let aVal = getValForSorting(a);
-        let bVal = getValForSorting(b);
-        
-        if (matchingCol.sortAsNumber) {
-            if (isAsc) {
-                return aVal - bVal;
-            } else {
-                return bVal - aVal;
-            }
-        } else if (matchingCol.compareFunc) {
-            if (isAsc) {
-                return matchingCol.compareFunc(aVal, bVal);
-            } else {
-                return matchingCol.compareFunc(bVal, aVal);
-            }
-        } else {
-            if (isAsc) {
-                if (aVal.toUpperCase() > bVal.toUpperCase()) {
-                    return 1;
-                } else if (aVal.toUpperCase() < bVal.toUpperCase()) {
-                    return -1;
-                } else {
-                    return 0;
-                }
-            } else {
-                if (aVal.toUpperCase() < bVal.toUpperCase()) {
-                    return 1;
-                } else if (aVal.toUpperCase() > bVal.toUpperCase()) {
-                    return -1;
-                } else {
-                    return 0;
-                }
-            }
-        }
-    });
-}
-
-const requestHandlers = {
-    "/shots/find": {
-        POST: (req, res) => {
-            getBodyFromRequest(req)
-                .then(resolve => {
-                    let parsedBody = JSON.parse(resolve);
-                    let shots = mockShotStorage;
-
-                    //append brew_ratio
-                    shots.forEach(shot => shot.brew_ratio = shot.brew_amount_grams / shot.dose_amount_grams);
-                    
-                    if (parsedBody.filter.filterType) {
-                        shots = filterShots(parsedBody.filter, shots);
-                    }
-
-                    let totalItems = shots.length;
-                    
-                    if (parsedBody.sortedColId && parsedBody.sortOrder) {
-                        shots = sortShots(parsedBody.sortOrder, parsedBody.sortedColId, shots);
-                    }
-                    
-                    let skipAmount = parsedBody.page * parsedBody.pageSize;
-                    let takeAmount = parsedBody.pageSize;
-                    shots = shots.filter((val,index) => 
-                        index >= skipAmount && 
-                        index < (skipAmount + takeAmount));
-                    
-                    let returnObj = {
-                        shots: shots,
-                        totalItems: totalItems
-                    };
-                    let returnObjJSON = JSON.stringify(returnObj);
-
-                    returnOk(res, returnObjJSON);
-                });
-        }
-    },
-    "/shots/add": {
-        POST: (req, res) => {
-            let newId = mockShotStorage.length + 1;
-            getBodyFromRequest(req)
-                .then(resolve => {
-                    let obj = JSON.parse(resolve);
-                    let newShotRecord = {
-                        ...obj,
-                        id: newId
-                    };
-                    mockShotStorage.push(newShotRecord);
-
-                    returnOk(res);
-                });
-        }
-    },
-    "/issues": {
-        GET: (req, res) => {
-            respondWithJSON(res, mockShotStorage);
-        }
-    },
-    "/issues/add": {
-        POST: (req, res) => {
-            getBodyFromRequest(req)
-                .then(resolve => {
-                    let issue = resolve;
-                    issues.push(issue);
-
-                    returnOk(res);
-                })
-        }
-    },
-    "/metadata": {
-        GET: (req, res) => {
-            let roastersAndBeans = getUniqueRoastersAndBeans();
-
-            let all = {
-                roasters: roastersAndBeans.uniqueRoasters,
-                beans: roastersAndBeans.uniqueRoasterBeans,
-                issues: issues
-            };
-
-            respondWithJSON(res, all);
-        }
-    }
-};
-
-const getBodyFromRequest = function(req) {
-    return new Promise(resolve => {
-        let body = [];
-        req.on('data', chunk => {
-            body.push(chunk);
-        }).on('end', () => {
-            let bodyStr = Buffer.concat(body).toString();
-            resolve(bodyStr);
-        });
-    });
-}
-
-const respondWithJSON = function(res, obj) {
-    let asJSON = JSON.stringify(obj);
-
-    addJSONContentTypeHeader(res);
-    returnOk(res, asJSON);
-}
-
-const returnOk = function(res, bodyJSON = null) {
-    addCORSHeader(res);
-    res.writeHead(http_status_ok);
-    
-    if (bodyJSON) {
-        res.end(bodyJSON);
-    } else {
-        res.end();
-    }
-}
-
-const addCORSHeader = function(res) {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-}
-
-const addJSONContentTypeHeader = function(res) {
-    res.setHeader("Content-Type", "application/json");
-}
-
-const getUniqueRoastersAndBeans = function() {
-    let uniqueRoasters = getUniqueRoasters();
-    let uniqueRoasterBeans = {};
-    uniqueRoasters.forEach(roaster => {
-        uniqueRoasterBeans[roaster] = new Set();
-    });
-
-    mockShotStorage.forEach(shot => {
-        let matchingRoasterSet = uniqueRoasterBeans[shot.roaster];
-
-        if (!matchingRoasterSet.has(shot.bean)) {
-            matchingRoasterSet.add(shot.bean);
-        }
-    });
-
-    Object.getOwnPropertyNames(uniqueRoasterBeans).forEach(roaster => {
-        uniqueRoasterBeans[roaster] = Array.from(uniqueRoasterBeans[roaster]);
-    });
-
-    return {
-        uniqueRoasters: uniqueRoasters,
-        uniqueRoasterBeans: uniqueRoasterBeans
-    };
-}
-
-const getUniqueRoasters = function() {
-    return Array.from(getUniqueItems(mockShotStorage, x => x.roaster));
-}
-
-const getUniqueItems = function(collection, delegate) {
-    let uniqueItems = new Set();
-    collection.forEach(record => {
-        let item = undefined;
-        if (delegate) {
-            item = delegate(record);
-        } else {
-            item = record;
-        }
-
-        if (!uniqueItems.has(item)) {
-            uniqueItems.add(item);
-        }
-    });
-
-    return uniqueItems;
 }
