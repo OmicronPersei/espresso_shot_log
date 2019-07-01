@@ -23,7 +23,7 @@ module.exports.respondOkWithJSON = respondOkWithJSON;
 
 const returnOk = function(res, bodyJSON = null) {
     addCORSHeader(res);
-    res.writeHead(http_status_codes.http_status_ok);
+    res.writeHead(http_status_codes.ok);
     
     if (bodyJSON) {
         res.end(bodyJSON);

@@ -153,7 +153,7 @@ module.exports.requestHandlers = {
             let all = {
                 roasters: roastersAndBeans.uniqueRoasters,
                 beans: roastersAndBeans.uniqueRoasterBeans,
-                issues: issues
+                issues: mock_storage.issues
             };
 
             node_methods.respondOkWithJSON(res, all);

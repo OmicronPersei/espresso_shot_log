@@ -58,12 +58,12 @@ const getPath = function(req) {
 const sendMethodIsSupportedResponse = function(res) {
     node_methods.addAllowableHeadersHeader(res);
     node_methods.addCORSHeader(res);
-    res.writeHead(http_status_codes.http_status_no_contents);
+    res.writeHead(http_status_codes.no_contents);
     res.end();
 }
 
 const sendMethodIsNotSupportedResponse = function(res) {
-    res.writeHead(http_status_codes.http_status_not_found);
+    res.writeHead(http_status_codes.not_found);
     res.end();
 }
 
@@ -73,12 +73,24 @@ const processRequest = function(req, res) {
 
     console.log(`processing method ${method} path ${path}`);
 
+    let reqHandler = undefined;
+
     try {
-        let reqHandler = rest_endpoints.requestHandlers[path][method];
+        reqHandler = rest_endpoints.requestHandlers[path][method];
+    }
+    catch (error) {
+        console.error(`Could not find a matching handler for the path ${path} and the verb ${method}`);
+        res.writeHead(http_status_codes.not_found);
+        res.end();
+
+        return;
+    }
+
+    try {
         reqHandler(req, res);
     } catch (error) {
-        console.error(`Could not find a matching handler for the path ${path} and the verb ${method}`);
-        res.writeHead(http_status_codes.http_status_not_found);
+        console.error("Encountered error during calling the request handler: " + error);
+        res.writeHead(http_status_codes.internal_server_error);
         res.end();
     }
 }
