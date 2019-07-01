@@ -5,9 +5,15 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TablePagination from '@material-ui/core/TablePagination';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import { Roaster, RoasterBean } from '../FilterSelector/FilterSelector';
 import TableToolbar from './TableToolbar';
+
+import TableFooter from '@material-ui/core/TableFooter';
+
+import TablePaginationActions from './TablePaginationActions';
+
+import API from '../../API';
 
 class ShotRecordsTable extends React.Component {
 
@@ -20,35 +26,39 @@ class ShotRecordsTable extends React.Component {
             { label: "Date/time", id: "timestamp", sortAsNumber: true },
             { label: "Roaster", id: "roaster", sortAsNumber: false },
             { label: "Bean", id: "bean", sortAsNumber: false },
-            { label: "Dose", id: "dose_amount", sortAsNumber: true },
-            { label: "Brew Amount", id: "brew_amount", sortAsNumber: true },
+            { label: "Dose", id: "dose_amount_grams", sortAsNumber: true },
+            { label: "Brew Amount", id: "brew_amount_grams", sortAsNumber: true },
             { label: "Brew Ratio", id: "brew_ratio", sortAsNumber: true },
             { label: "Brew time", id: "brew_time_seconds", sortAsNumber: true },
-            { 
-                label: "Bitterness/sourness", 
-                id: "bitter_sour", 
-                sortAsNumber: true
-            },
+            { label: "Bitterness/sourness", id: "bitter_sour", sortAsNumber: true },
         ];
         
         this.state = {
-            sortOrder: null,
-            sortedColId: null,
+            shotPageQuery: {
+                sortOrder: null,
+                sortedColId: null,
+                filter: {
+                    roaster: "",
+                    bean: "",
+                    filterType: ""
+                },
+                page: 0,
+                pageSize: 5,
+            },
             showFilterPopover: false,
-            filter: {
-                roaster: "",
-                bean: "",
-                filterType: ""
-            }
+            shots: [],
+            totalItems: 0
         };
+
+        this._api = new API();
+    }
+
+    componentDidMount() {
+        this.retrieveAndSetShots();
     }
 
     render() {
-        let shotDisplayRecords = this.mapToShotDisplayRecords(this.props.shots);
-
-        shotDisplayRecords = this.filterDisplayRecords(this.state.filter, shotDisplayRecords);
-
-        shotDisplayRecords = this.sortDisplayRecords(shotDisplayRecords);
+        let shotDisplayRecords = this.mapToShotDisplayRecords(this.state.shots);
 
         return (
             <div>
@@ -63,9 +73,9 @@ class ShotRecordsTable extends React.Component {
             return {
                 roaster: { value: x.roaster, label: x.roaster },
                 bean: { value: x.bean, label: x.bean },
-                dose_amount: { value: x.dose_amount_grams, label: x.dose_amount_grams },
-                brew_amount: { value: x.brew_amount_grams, label: x.brew_amount_grams },
-                brew_ratio: { value: (x.brew_amount_grams/x.dose_amount_grams), label: this.roundToThreeDecimalPlaces(x.brew_amount_grams / x.dose_amount_grams) },
+                dose_amount_grams: { value: x.dose_amount_grams, label: x.dose_amount_grams },
+                brew_amount_grams: { value: x.brew_amount_grams, label: x.brew_amount_grams },
+                brew_ratio: { value: x.brew_ratio, label: this.roundToThreeDecimalPlaces(x.brew_ratio) },
                 brew_time_seconds: { value: x.brew_time_seconds, label: x.brew_time_seconds },
                 bitter_sour: { value: x.bitter_sour.replace(/\D/g, ""), label: x.bitter_sour },
                 id: x.id,
@@ -74,84 +84,32 @@ class ShotRecordsTable extends React.Component {
         });
     }
 
-    sortDisplayRecords(shotDisplayRecords) {
-        if (!this.state.sortedColId) {
-            return shotDisplayRecords;
-        }
-
-        let getValForSorting = val => val[this.state.sortedColId].value;
-        let matchingCol = this.cols.find(col => col.id === this.state.sortedColId);
-
-        return shotDisplayRecords.sort((a,b) => {
-            let aVal = getValForSorting(a);
-            let bVal = getValForSorting(b);
-
-            let isAsc = this.state.sortOrder === "asc";
-            if (matchingCol.sortAsNumber) {
-                if (isAsc) {
-                    return aVal - bVal;
-                } else {
-                    return bVal - aVal;
-                }
-            } else {
-                if (isAsc) {
-                    if (aVal.toUpperCase() > bVal.toUpperCase()) {
-                        return 1;
-                    } else if (aVal.toUpperCase() < bVal.toUpperCase()) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                } else {
-                    if (aVal.toUpperCase() < bVal.toUpperCase()) {
-                        return 1;
-                    } else if (aVal.toUpperCase() > bVal.toUpperCase()) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                }
-            }
-        });
-    }
-
-    filterDisplayRecords(filter, shotDisplayRecords) {
-
-        if (!filter.filterType) {
-            return shotDisplayRecords;
-        }
-
-        switch (filter.filterType.toLowerCase()) {
-            case Roaster.toLowerCase():
-                return shotDisplayRecords.filter(r => r.roaster.value === filter.roaster);
-
-            case RoasterBean.toLowerCase():
-                return shotDisplayRecords.filter(r => (r.roaster.value === filter.roaster) && (r.bean.value === filter.bean));
-
-            default:
-                throw new Error("Unknown filter type");
-        }
-    }
-
     renderTableToolbar() {
         return (
             <TableToolbar
-                currentFilter={this.state.filter}
-                onFilterChange={filter => this.setState({ filter: filter })}
+                currentFilter={this.state.shotPageQuery.filter}
+                onFilterChange={filter => this.handleFilterChange(filter)}
                 roasters={this.props.roasters}
                 beans={this.props.beans}
                 shots={this.props.shots}
             />
         )
     }
+
+    handleFilterChange(filter) {
+        let shotPageQuery = {...this.state.shotPageQuery};
+        shotPageQuery.filter = filter;
+
+        this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
+    }
     
     renderTable(shotDisplayRecords) {
         
         let headerProps = {
             cols: this.cols,
-            sortedColId: this.state.sortedColId,
-            order: this.state.sortOrder,
-            onChangeSortedCol: (x) => this.handleChangeSortedCol(x)
+            sortedColId: this.state.shotPageQuery.sortedColId,
+            order: this.state.shotPageQuery.sortOrder,
+            onChangeSortedCol: (x) => this.handleChangeSortedColIdChange(x)
         };
 
         return (
@@ -160,19 +118,32 @@ class ShotRecordsTable extends React.Component {
                 <TableBody>
                     {RenderCells(shotDisplayRecords, this.cols)}
                 </TableBody>
+                <TableFooter>
+                    <TableRow>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            count={this.state.totalItems}
+                            rowsPerPage={this.state.shotPageQuery.pageSize}
+                            page={this.state.shotPageQuery.page}
+                            onChangePage={page => this.handlePageChange(page)}
+                            onChangeRowsPerPage={event => this.handlePageSizeChange(event.target.value)}
+                            ActionsComponent={TablePaginationActions}
+                            />
+                    </TableRow>
+                </TableFooter>
             </Table>
         );
     }
 
-    handleChangeSortedCol(colId) {
-        let prevSortedColId = this.state.sortedColId;
+    handleChangeSortedColIdChange(colId) {
+        let prevSortedColId = this.state.shotPageQuery.sortedColId;
         let newSortOrder = "";
 
         if (prevSortedColId !== colId) {
             newSortOrder = "desc";
         } else {
             //order: (nosort), descending, ascending
-            switch (this.state.sortOrder) {
+            switch (this.state.shotPageQuery.sortOrder) {
                 case "desc":
                     newSortOrder = "asc";
                     break;
@@ -187,14 +158,60 @@ class ShotRecordsTable extends React.Component {
             }
         }
 
-        this.setState({
-            sortedColId: colId,
-            sortOrder: newSortOrder
-        });
+        let shotPageQuery = {...this.state.shotPageQuery};
+        shotPageQuery.sortOrder = newSortOrder;
+        shotPageQuery.sortedColId = colId;
+
+        this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
     }
 
     roundToThreeDecimalPlaces(num) {
         return Math.round(num * 1000) / 1000;
+    }
+    
+    handlePageChange(page) {
+        let shotPageQuery = {...this.state.shotPageQuery};
+        shotPageQuery.page = page;
+
+        this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
+    }
+
+    handlePageSizeChange(pageSize) {
+        let shotPageQuery = {...this.state.shotPageQuery};
+        shotPageQuery.pageSize = pageSize;
+
+        this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
+    }
+
+    retrieveAndSetShotPageUsingQuery(shotPageQuery) {
+        this.getShotPage(shotPageQuery)
+            .then(res => {
+                this.setState({
+                    shotPageQuery: shotPageQuery,
+                    shots: res.shots,
+                    totalItems: res.totalItems
+                });
+            });
+    }
+
+    retrieveAndSetShots() {
+        this.getShotPage(this.state.shotPageQuery)
+            .then(res => {
+                this.setState({
+                    shots: res.shots,
+                    totalItems: res.totalItems
+                });
+            });
+    }
+
+    getShotPage(pageQuery) {
+        return this._api.getShotPage(pageQuery)
+            .then(res => res.json())
+            .then(res => {
+                res.shots.forEach(shot => shot.timestamp = new Date(shot.timestamp));
+
+                return res;
+            });
     }
 }
 

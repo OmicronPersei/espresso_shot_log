@@ -1,12 +1,12 @@
-import config from '../config';
+import config from './config';
 
 class API {
     constructor() {
         this._config = config();
     }
 
-    getAllData() {
-        let endpoint = `${this._config.apiurl}/all`;
+    getMetadata() {
+        let endpoint = `${this._config.apiurl}/metadata`;
         let headers = new Headers();
         headers.set("Content-type", "application-json");
         let requestInit = {
@@ -66,6 +66,19 @@ class API {
             body: body
         };
         
+        return fetch(url, requestInit);
+    }
+
+    getShotPage(pageData) {
+        let url = `${this._config.apiurl}/shots/find`;
+        let headers = new Headers();
+        let body = JSON.stringify(pageData);
+        let requestInit = {
+            headers: headers,
+            method: "POST",
+            body: body
+        };
+
         return fetch(url, requestInit);
     }
 }
