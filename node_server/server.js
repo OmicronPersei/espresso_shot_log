@@ -41,7 +41,7 @@ const methodIsSupported = function(requestedMethod, path) {
 }
 
 const getAllowedMethodsForPath = function(path) {
-    let matchingObj = requestHandlers[path];
+    let matchingObj = rest_endpoints.requestHandlers[path];
     if (!matchingObj) {
         console.error(`Could not find any matching paths for ${path}`);
     } else {
@@ -78,7 +78,7 @@ const processRequest = function(req, res) {
         reqHandler(req, res);
     } catch (error) {
         console.error(`Could not find a matching handler for the path ${path} and the verb ${method}`);
-        res.writeHead(http_status_not_found);
+        res.writeHead(http_status_codes.http_status_not_found);
         res.end();
     }
 }

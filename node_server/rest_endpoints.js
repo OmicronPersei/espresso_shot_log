@@ -3,6 +3,8 @@ const RoasterBean = "Roaster/Bean";
 
 const node_methods = require('./node_methods');
 
+const mock_storage = require('./mock_data_storage')
+
 const filterShots = function(filterObj, shots) {
     switch (filterObj.filterType.toLowerCase()) {
         case Roaster.toLowerCase():
@@ -81,7 +83,7 @@ module.exports.requestHandlers = {
             node_methods.getBodyFromRequest(req)
                 .then(resolve => {
                     let parsedBody = JSON.parse(resolve);
-                    let shots = mockShotStorage;
+                    let shots = mock_storage.mockShotStorage;
 
                     //append brew_ratio
                     shots.forEach(shot => shot.brew_ratio = shot.brew_amount_grams / shot.dose_amount_grams);
@@ -114,7 +116,7 @@ module.exports.requestHandlers = {
     },
     "/shots/add": {
         POST: (req, res) => {
-            let newId = mockShotStorage.length + 1;
+            let newId = mock_storage.mockShotStorage.length + 1;
             node_methods.getBodyFromRequest(req)
                 .then(resolve => {
                     let obj = JSON.parse(resolve);
@@ -122,7 +124,7 @@ module.exports.requestHandlers = {
                         ...obj,
                         id: newId
                     };
-                    mockShotStorage.push(newShotRecord);
+                    mock_storage.mockShotStorage.push(newShotRecord);
 
                     node_methods.returnOk(res);
                 });
@@ -138,7 +140,7 @@ module.exports.requestHandlers = {
             node_methods.getBodyFromRequest(req)
                 .then(resolve => {
                     let issue = resolve;
-                    issues.push(issue);
+                    mock_storage.issues.push(issue);
 
                     returnOk(res);
                 })
@@ -166,7 +168,7 @@ const getUniqueRoastersAndBeans = function() {
         uniqueRoasterBeans[roaster] = new Set();
     });
 
-    mockShotStorage.forEach(shot => {
+    mock_storage.mockShotStorage.forEach(shot => {
         let matchingRoasterSet = uniqueRoasterBeans[shot.roaster];
 
         if (!matchingRoasterSet.has(shot.bean)) {
@@ -185,7 +187,7 @@ const getUniqueRoastersAndBeans = function() {
 }
 
 const getUniqueRoasters = function() {
-    return Array.from(getUniqueItems(mockShotStorage, x => x.roaster));
+    return Array.from(getUniqueItems(mock_storage.mockShotStorage, x => x.roaster));
 }
 
 const getUniqueItems = function(collection, delegate) {

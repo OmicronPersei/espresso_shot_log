@@ -1,4 +1,6 @@
-module.exports.getBodyFromRequest = function(req) {
+const http_status_codes = require('./http_status_codes');
+
+const getBodyFromRequest = function(req) {
     return new Promise(resolve => {
         let body = [];
         req.on('data', chunk => {
@@ -9,17 +11,19 @@ module.exports.getBodyFromRequest = function(req) {
         });
     });
 }
+module.exports.getBodyFromRequest = getBodyFromRequest;
 
-module.exports.respondOkWithJSON = function(res, obj) {
+const respondOkWithJSON = function(res, obj) {
     let asJSON = JSON.stringify(obj);
 
     addJSONContentTypeHeader(res);
     returnOk(res, asJSON);
 }
+module.exports.respondOkWithJSON = respondOkWithJSON;
 
-module.exports.returnOk = function(res, bodyJSON = null) {
+const returnOk = function(res, bodyJSON = null) {
     addCORSHeader(res);
-    res.writeHead(http_status_ok);
+    res.writeHead(http_status_codes.http_status_ok);
     
     if (bodyJSON) {
         res.end(bodyJSON);
@@ -27,15 +31,19 @@ module.exports.returnOk = function(res, bodyJSON = null) {
         res.end();
     }
 }
+module.exports.returnOk = returnOk;
 
 const addCORSHeader = function(res) {
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
 }
+module.exports.addCORSHeader = addCORSHeader;
 
 const addJSONContentTypeHeader = function(res) {
     res.setHeader("Content-Type", "application/json");
 }
+module.exports.addJSONContentTypeHeader = addJSONContentTypeHeader;
 
-module.exports.addAllowableHeadersHeader = function(res) {
+const addAllowableHeadersHeader = function(res) {
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
+module.exports.addAllowableHeadersHeader = addAllowableHeadersHeader;
