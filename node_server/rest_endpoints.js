@@ -45,11 +45,9 @@ const sortShots = function(sortOrder, sortedColId, shots) {
         
         if (matchingCol.sortAsNumber) {
             if (isAsc) {
-                let diff = aVal - bVal
-                return diff;
+                return aVal - bVal;
             } else {
-                let diff = bVal - aVal
-                return diff;
+                return bVal - aVal;
             }
         } else if (matchingCol.compareFunc) {
             if (isAsc) {
