@@ -45,9 +45,11 @@ const sortShots = function(sortOrder, sortedColId, shots) {
         
         if (matchingCol.sortAsNumber) {
             if (isAsc) {
-                return aVal - bVal;
+                let diff = aVal - bVal
+                return diff;
             } else {
-                return bVal - aVal;
+                let diff = bVal - aVal
+                return diff;
             }
         } else if (matchingCol.compareFunc) {
             if (isAsc) {
@@ -120,6 +122,7 @@ module.exports.requestHandlers = {
             node_methods.getBodyFromRequest(req)
                 .then(resolve => {
                     let obj = JSON.parse(resolve);
+                    obj.timestamp = new Date(obj.timestamp);
                     let newShotRecord = {
                         ...obj,
                         id: newId
