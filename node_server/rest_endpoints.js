@@ -120,6 +120,7 @@ module.exports.requestHandlers = {
             node_methods.getBodyFromRequest(req)
                 .then(resolve => {
                     let obj = JSON.parse(resolve);
+                    obj.timestamp = new Date(obj.timestamp);
                     let newShotRecord = {
                         ...obj,
                         id: newId
