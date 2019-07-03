@@ -23,7 +23,20 @@ class MainDisplay extends React.Component {
             awaitingAPICallback: {
                 savingNewShot: false,
                 savingNewIssue: false
-            }
+            },
+            shotPageQuery: {
+                sortOrder: null,
+                sortedColId: null,
+                filter: {
+                    roaster: "",
+                    bean: "",
+                    filterType: ""
+                },
+                page: 0,
+                pageSize: 5,
+            },
+            shots: [],
+            totalItems: 0
         };
 
         this.getAllMetadata();
@@ -53,7 +66,12 @@ class MainDisplay extends React.Component {
                 <Paper>
                     <ShotRecordsTable
                         roasters={this.state.roasters}
-                        beans={this.state.beans} />
+                        beans={this.state.beans}
+                        shotPageQuery={this.state.shotPageQuery}
+                        totalItems={this.state.totalItems}
+                        shots={this.state.shots}
+                        updateTableDisplay={shotPageQuery => this.retrieveAndSetShotPageUsingQuery(shotPageQuery)}
+                    />
                 </Paper>
                 <div className="add-icon">
                     <Fab color="primary" aria-label="Add" onClick={() => this.handleAddButtonClick()}>
@@ -124,6 +142,7 @@ class MainDisplay extends React.Component {
                 });
             })
             .catch(error => this.handleAPIError("saving new shot", error))
+            .then(() => this.retrieveAndSetShotPageUsingQuery(this.state.shotPageQuery))
             .then(() => this.setWaitingOnAPIFlag("savingNewShot", false));
     }
 
@@ -144,6 +163,27 @@ class MainDisplay extends React.Component {
 
     handleAPIError(action, error) {
         console.error(`failed to ${action}: ${error}`);
+    }
+    
+    retrieveAndSetShotPageUsingQuery(shotPageQuery) {
+        this.getShotPage(shotPageQuery)
+            .then(res => {
+                this.setState({
+                    shotPageQuery: shotPageQuery,
+                    shots: res.shots,
+                    totalItems: res.totalItems
+                });
+            });
+    }
+
+    getShotPage(pageQuery) {
+        return this._api.getShotPage(pageQuery)
+            .then(res => res.json())
+            .then(res => {
+                res.shots.forEach(shot => shot.timestamp = new Date(shot.timestamp));
+
+                return res;
+            });
     }
 }
 
