@@ -66,7 +66,12 @@ class MainDisplay extends React.Component {
                 <Paper>
                     <ShotRecordsTable
                         roasters={this.state.roasters}
-                        beans={this.state.beans} />
+                        beans={this.state.beans}
+                        shotPageQuery={this.state.shotPageQuery}
+                        totalItems={this.state.totalItems}
+                        shots={this.state.shots}
+                        updateTableDisplay={shotPageQuery => this.retrieveAndSetShotPageUsingQuery(shotPageQuery)}
+                    />
                 </Paper>
                 <div className="add-icon">
                     <Fab color="primary" aria-label="Add" onClick={() => this.handleAddButtonClick()}>
@@ -84,9 +89,6 @@ class MainDisplay extends React.Component {
                     onNewIssueAdded={(issue) => this.handleNewIssueAdded(issue)}
                     onAddShotRecord={(shot) => this.handleAddNewShotRecord(shot)}
                     awaitingAPICallback={this.state.awaitingAPICallback}
-                    shotPageQuery={this.state.shotPageQuery}
-                    totalItems={this.state.totalItems}
-                    updateTableDisplay={shotPageQuery => this.retrieveAndSetShotPageUsingQuery(shotPageQuery)}
                 />
             </div>
         );
@@ -140,6 +142,7 @@ class MainDisplay extends React.Component {
                 });
             })
             .catch(error => this.handleAPIError("saving new shot", error))
+            .then(() => this.retrieveAndSetShotPageUsingQuery(this.state.shotPageQuery))
             .then(() => this.setWaitingOnAPIFlag("savingNewShot", false));
     }
 
