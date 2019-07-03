@@ -34,20 +34,7 @@ class ShotRecordsTable extends React.Component {
         ];
         
         this.state = {
-            shotPageQuery: {
-                sortOrder: null,
-                sortedColId: null,
-                filter: {
-                    roaster: "",
-                    bean: "",
-                    filterType: ""
-                },
-                page: 0,
-                pageSize: 5,
-            },
             showFilterPopover: false,
-            shots: [],
-            totalItems: 0
         };
 
         this._api = new API();
@@ -58,7 +45,7 @@ class ShotRecordsTable extends React.Component {
     }
 
     render() {
-        let shotDisplayRecords = this.mapToShotDisplayRecords(this.state.shots);
+        let shotDisplayRecords = this.mapToShotDisplayRecords(this.props.shots);
 
         return (
             <div>
@@ -87,7 +74,7 @@ class ShotRecordsTable extends React.Component {
     renderTableToolbar() {
         return (
             <TableToolbar
-                currentFilter={this.state.shotPageQuery.filter}
+                currentFilter={this.props.shotPageQuery.filter}
                 onFilterChange={filter => this.handleFilterChange(filter)}
                 roasters={this.props.roasters}
                 beans={this.props.beans}
@@ -97,7 +84,7 @@ class ShotRecordsTable extends React.Component {
     }
 
     handleFilterChange(filter) {
-        let shotPageQuery = {...this.state.shotPageQuery};
+        let shotPageQuery = {...this.props.shotPageQuery};
         shotPageQuery.filter = filter;
 
         this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
@@ -107,8 +94,8 @@ class ShotRecordsTable extends React.Component {
         
         let headerProps = {
             cols: this.cols,
-            sortedColId: this.state.shotPageQuery.sortedColId,
-            order: this.state.shotPageQuery.sortOrder,
+            sortedColId: this.props.shotPageQuery.sortedColId,
+            order: this.props.shotPageQuery.sortOrder,
             onChangeSortedCol: (x) => this.handleChangeSortedColIdChange(x)
         };
 
@@ -122,9 +109,9 @@ class ShotRecordsTable extends React.Component {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25]}
-                            count={this.state.totalItems}
-                            rowsPerPage={this.state.shotPageQuery.pageSize}
-                            page={this.state.shotPageQuery.page}
+                            count={this.props.totalItems}
+                            rowsPerPage={this.props.shotPageQuery.pageSize}
+                            page={this.props.shotPageQuery.page}
                             onChangePage={page => this.handlePageChange(page)}
                             onChangeRowsPerPage={event => this.handlePageSizeChange(event.target.value)}
                             ActionsComponent={TablePaginationActions}
@@ -136,14 +123,14 @@ class ShotRecordsTable extends React.Component {
     }
 
     handleChangeSortedColIdChange(colId) {
-        let prevSortedColId = this.state.shotPageQuery.sortedColId;
+        let prevSortedColId = this.props.shotPageQuery.sortedColId;
         let newSortOrder = "";
 
         if (prevSortedColId !== colId) {
             newSortOrder = "desc";
         } else {
             //order: (nosort), descending, ascending
-            switch (this.state.shotPageQuery.sortOrder) {
+            switch (this.props.shotPageQuery.sortOrder) {
                 case "desc":
                     newSortOrder = "asc";
                     break;
@@ -158,7 +145,7 @@ class ShotRecordsTable extends React.Component {
             }
         }
 
-        let shotPageQuery = {...this.state.shotPageQuery};
+        let shotPageQuery = {...this.props.shotPageQuery};
         shotPageQuery.sortOrder = newSortOrder;
         shotPageQuery.sortedColId = colId;
 
@@ -170,49 +157,27 @@ class ShotRecordsTable extends React.Component {
     }
     
     handlePageChange(page) {
-        let shotPageQuery = {...this.state.shotPageQuery};
+        let shotPageQuery = {...this.props.shotPageQuery};
         shotPageQuery.page = page;
 
         this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
     }
 
     handlePageSizeChange(pageSize) {
-        let shotPageQuery = {...this.state.shotPageQuery};
+        let shotPageQuery = {...this.props.shotPageQuery};
         shotPageQuery.pageSize = pageSize;
 
         this.retrieveAndSetShotPageUsingQuery(shotPageQuery);
     }
 
-    retrieveAndSetShotPageUsingQuery(shotPageQuery) {
-        this.getShotPage(shotPageQuery)
-            .then(res => {
-                this.setState({
-                    shotPageQuery: shotPageQuery,
-                    shots: res.shots,
-                    totalItems: res.totalItems
-                });
-            });
-    }
-
     retrieveAndSetShots() {
-        this.getShotPage(this.state.shotPageQuery)
-            .then(res => {
-                this.setState({
-                    shots: res.shots,
-                    totalItems: res.totalItems
-                });
-            });
+        this.props.updateTableDisplay(this.props.shotPageQuery);
     }
 
-    getShotPage(pageQuery) {
-        return this._api.getShotPage(pageQuery)
-            .then(res => res.json())
-            .then(res => {
-                res.shots.forEach(shot => shot.timestamp = new Date(shot.timestamp));
-
-                return res;
-            });
+    retrieveAndSetShotPageUsingQuery(shotPageQuery) {
+        this.props.updateTableDisplay(shotPageQuery);
     }
+
 }
 
 function RenderSortableTableHeader(props) {

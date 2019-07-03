@@ -23,7 +23,20 @@ class MainDisplay extends React.Component {
             awaitingAPICallback: {
                 savingNewShot: false,
                 savingNewIssue: false
-            }
+            },
+            shotPageQuery: {
+                sortOrder: null,
+                sortedColId: null,
+                filter: {
+                    roaster: "",
+                    bean: "",
+                    filterType: ""
+                },
+                page: 0,
+                pageSize: 5,
+            },
+            shots: [],
+            totalItems: 0
         };
 
         this.getAllMetadata();
@@ -71,6 +84,9 @@ class MainDisplay extends React.Component {
                     onNewIssueAdded={(issue) => this.handleNewIssueAdded(issue)}
                     onAddShotRecord={(shot) => this.handleAddNewShotRecord(shot)}
                     awaitingAPICallback={this.state.awaitingAPICallback}
+                    shotPageQuery={this.state.shotPageQuery}
+                    totalItems={this.state.totalItems}
+                    updateTableDisplay={shotPageQuery => this.retrieveAndSetShotPageUsingQuery(shotPageQuery)}
                 />
             </div>
         );
@@ -144,6 +160,27 @@ class MainDisplay extends React.Component {
 
     handleAPIError(action, error) {
         console.error(`failed to ${action}: ${error}`);
+    }
+    
+    retrieveAndSetShotPageUsingQuery(shotPageQuery) {
+        this.getShotPage(shotPageQuery)
+            .then(res => {
+                this.setState({
+                    shotPageQuery: shotPageQuery,
+                    shots: res.shots,
+                    totalItems: res.totalItems
+                });
+            });
+    }
+
+    getShotPage(pageQuery) {
+        return this._api.getShotPage(pageQuery)
+            .then(res => res.json())
+            .then(res => {
+                res.shots.forEach(shot => shot.timestamp = new Date(shot.timestamp));
+
+                return res;
+            });
     }
 }
 
