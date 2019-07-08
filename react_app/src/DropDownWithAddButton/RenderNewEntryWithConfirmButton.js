@@ -37,10 +37,24 @@ export default function RenderNewEntryWithConfirmButton(props) {
                             disabled={props.disabled}></TextField>
                     </td>
                     <td className="drop-down-button">
-                        <IconButton onClick={props.onAddConfirmed} size="small" className={styles.button} disabled={props.disabled}><DoneIcon /></IconButton>
+                        <IconButton 
+                            onClick={props.onAddConfirmed} 
+                            size="small" 
+                            className={styles.button} 
+                            disabled={props.disabled}
+                        >
+                            <DoneIcon />
+                        </IconButton>
                     </td>
                     <td className="drop-down-button">
-                        <IconButton onClick={props.onCancelClicked} size="small" className="action-button" disabled={props.disabled}><DeleteIcon /></IconButton>
+                        <IconButton 
+                            onClick={props.onCancelClicked} 
+                            size="small" 
+                            className="action-button" 
+                            disabled={props.disabled}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
                     </td>
                 </tr>
             </tbody>
