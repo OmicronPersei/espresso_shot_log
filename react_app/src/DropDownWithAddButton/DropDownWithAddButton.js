@@ -109,11 +109,11 @@ class DropDownWithAddButton extends React.Component {
         let addingNewItem = this.state.addingNewItem;
         
         return (
-            <div>
+            <React.Fragment>
                 {addingNewItem ? 
                     this.renderAddingNewItem() 
                     : this.renderMenuItemsSelect()}
-            </div>
+            </React.Fragment>
         )
     }
 
