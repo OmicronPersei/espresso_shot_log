@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MainDisplay from './MainDisplay/MainDisplay';
+// import MainDisplay from './MainDisplay/MainDisplay';
+import App from './App';
 
 
 
-ReactDOM.render(<MainDisplay />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));
 
 //-----below is test code and should be removed before being merged.-----
 // Add this in node_modules/react-dom/index.js
