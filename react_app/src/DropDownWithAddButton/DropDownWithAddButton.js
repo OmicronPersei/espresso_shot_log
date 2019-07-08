@@ -120,7 +120,7 @@ class DropDownWithAddButton extends React.Component {
     renderMenuItemsSelect() {
         let items = this.props.items;
         if (this.state.itemsHasNewValue) {
-            items = items.slice();
+            items = (items && items.slice()) || [];
             items.push(this.state.newValue);
         }
 
@@ -180,6 +180,8 @@ class DropDownWithAddButton extends React.Component {
                 newValue: prevState.value
             };
         });
+
+        this.raiseOnChangeCallback(this.state.value);
     }
 
     handleCancelAddingNewItem() {
