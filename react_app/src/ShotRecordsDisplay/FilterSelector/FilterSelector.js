@@ -58,7 +58,7 @@ class FilterSelector extends React.Component {
 
     renderFilterValueSelectors() {
         return (
-            <div>
+            <React.Fragment>
             {this.shouldRenderRoasterSelector() ? (
                 <DropDown
                     name="Roaster"
@@ -73,7 +73,7 @@ class FilterSelector extends React.Component {
                     items={this.props.beans[this.state.roaster]}
                     onChange={x => this.setState({ bean: x })} />
             ) : null}
-            </div>
+            </React.Fragment>
         )
     }
 

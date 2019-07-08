@@ -42,7 +42,7 @@ class NewShotLogEntryForm extends React.Component {
 
     render() {
         return (
-            <div>
+            <React.Fragment>
                 <Grid container spacing={2} justify="center" alignContent="center" alignItems="center">
                     <Grid item sm={6} xs={12} md={6}>
                         <div className="form-item left">
@@ -126,7 +126,7 @@ class NewShotLogEntryForm extends React.Component {
                         </div>
                     </Grid>
                 </Grid>
-            </div>
+            </React.Fragment>
         )
     }
 
