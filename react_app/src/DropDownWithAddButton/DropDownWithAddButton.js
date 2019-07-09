@@ -1,13 +1,9 @@
 import React from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import DoneIcon from '@material-ui/icons/Done';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddIcon from '@material-ui/icons/Add';
-import './style.css';
-import { IconButton } from '@material-ui/core';
 
-import DropDown from '../DropDown/DropDown';
+import './style.css';
+
+import NonEditableDropDown from './NonEditableDropDown';
+import TextInputConfirmCancel from './TextInputConfirmCancel';
 
 //Using the below style is affected by the known [issue](https://github.com/facebook/react/issues/13991)
 
@@ -19,77 +15,6 @@ import DropDown from '../DropDown/DropDown';
 //       display: 'none',
 //     },
 //   }));
-
-function renderMenuItemsWithAddbutton(props) {
-    let items = props.items;
-
-    let menuItems = [];
-    
-    let nullMenuItem = (
-        <MenuItem value="" key="">
-            (none)
-        </MenuItem>
-    );
-
-    menuItems.push(nullMenuItem);
-
-    let defaultMenuItems = items && items.map(item =>
-        (
-            <MenuItem value={item} key={item}>
-                {item}
-            </MenuItem>
-        )
-    );
-
-    menuItems = menuItems.concat(defaultMenuItems);
-    
-    return (
-        <table className="drop-down-table">
-            <tbody>
-                <tr>
-                    <td className="drop-down-select">
-                        <DropDown
-                            name={props.name}
-                            value={props.value}
-                            items={props.items}
-                            onChange={x => props.onChange(x)} 
-                            fullWidth={true}
-                        />
-                    </td>
-                    <td className="drop-down-button">
-                        <IconButton onClick={() => props.onAddClick()} size="small" className="action-button"><AddIcon /></IconButton>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    );
-}
-
-function renderNewEntryWithConfirmButton(props) {
-    return (
-        <table className="drop-down-table">
-            <tbody>
-                <tr>
-                    <td className="drop-down-select">
-                        <TextField 
-                            value={props.value} 
-                            onChange={(event) => props.onTextChange(event.target.value)}
-                            label={"New " + props.name.toLowerCase()}
-                            className="selector"
-                            fullWidth={true}
-                            disabled={props.disabled}></TextField>
-                    </td>
-                    <td className="drop-down-button">
-                        <IconButton onClick={props.onAddConfirmed} size="small" className="action-button" disabled={props.disabled}><DoneIcon /></IconButton>
-                    </td>
-                    <td className="drop-down-button">
-                        <IconButton onClick={props.onCancelClicked} size="small" className="action-button" disabled={props.disabled}><DeleteIcon /></IconButton>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    );
-}
 
 class DropDownWithAddButton extends React.Component {
 
@@ -124,7 +49,7 @@ class DropDownWithAddButton extends React.Component {
             items.push(this.state.newValue);
         }
 
-        return renderMenuItemsWithAddbutton({
+        return NonEditableDropDown({
             items: items,
             value: this.state.value,
             onChange: (item) => this.handleItemSelectChange(item),
@@ -151,7 +76,7 @@ class DropDownWithAddButton extends React.Component {
     }
 
     renderAddingNewItem() {
-        return renderNewEntryWithConfirmButton({
+        return TextInputConfirmCancel({
             name: this.props.name,
             onTextChange: (newVal) => this.handleAddNewItemTextChange(newVal),
             onAddConfirmed: () => this.handleAddNewItem(),
