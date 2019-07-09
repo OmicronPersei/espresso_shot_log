@@ -8,6 +8,8 @@ import { IconButton, FormHelperText } from '@material-ui/core';
 import './style.css';
 
 export default function TextInputConfirmCancel(props) {
+    let hasError = !!props.error;
+
     return (
         <table className="drop-down-table">
             <tbody>
@@ -20,14 +22,14 @@ export default function TextInputConfirmCancel(props) {
                             className="selector"
                             fullWidth={true}
                             disabled={props.disabled}
-                            error={!!props.error}></TextField>
+                            error={hasError}></TextField>
                     </td>
                     <td className="drop-down-button">
                         <IconButton 
                             onClick={props.onAddConfirmed} 
                             size="small" 
                             className="action-button" 
-                            disabled={props.disabled}
+                            disabled={props.disabled || hasError}
                         >
                                 <DoneIcon />
                         </IconButton>

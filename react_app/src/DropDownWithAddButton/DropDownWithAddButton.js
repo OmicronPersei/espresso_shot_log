@@ -76,7 +76,7 @@ class DropDownWithAddButton extends React.Component {
     }
 
     renderAddingNewItem() {
-        let error = this.props.items.includes(this.state.value) ? { description: "Item already exists" } : null;
+        let error = this.props.items.includes(this.state.value) ? { description: this.props.name + " already exists" } : null;
 
         return TextInputConfirmCancel({
             name: this.props.name,
