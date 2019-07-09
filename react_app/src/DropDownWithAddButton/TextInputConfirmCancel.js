@@ -3,7 +3,7 @@ import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import DoneIcon from '@material-ui/icons/Done';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { IconButton } from '@material-ui/core';
+import { IconButton, FormHelperText } from '@material-ui/core';
 
 import './style.css';
 
@@ -19,15 +19,36 @@ export default function TextInputConfirmCancel(props) {
                             label={"New " + props.name.toLowerCase()}
                             className="selector"
                             fullWidth={true}
-                            disabled={props.disabled}></TextField>
+                            disabled={props.disabled}
+                            error={!!props.error}></TextField>
                     </td>
                     <td className="drop-down-button">
-                        <IconButton onClick={props.onAddConfirmed} size="small" className="action-button" disabled={props.disabled}><DoneIcon /></IconButton>
+                        <IconButton 
+                            onClick={props.onAddConfirmed} 
+                            size="small" 
+                            className="action-button" 
+                            disabled={props.disabled}
+                        >
+                                <DoneIcon />
+                        </IconButton>
                     </td>
                     <td className="drop-down-button">
-                        <IconButton onClick={props.onCancelClicked} size="small" className="action-button" disabled={props.disabled}><DeleteIcon /></IconButton>
+                        <IconButton 
+                            onClick={props.onCancelClicked} 
+                            size="small" 
+                            className="action-button" 
+                            disabled={props.disabled}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
                     </td>
                 </tr>
+                {props.error ? (
+                <tr>
+                    <td>
+                        <FormHelperText error={true}>{props.error.description}</FormHelperText>
+                    </td>
+                </tr>) : null}
             </tbody>
         </table>
     );
